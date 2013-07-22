@@ -8,9 +8,8 @@ def main(argv):
     kargs = {}
     if len(argv) >= 2:
         kargs['filename'] = argv[1]
-    db = UnqliteDatabase(**kargs) 
-    
-    try:
+        
+    with UnqliteDatabase(**kargs) as db: 
         # store some records
         db.kv_store('test', 'Hello')
         db.kv_store('date', 'dummy date: {0}:{1}:{2}'.format(2013, 06, 07))
@@ -36,10 +35,7 @@ def main(argv):
             print 'db({0})={1}'.format(entry.key, entry.data)
         
         print 'Finished iteration process'
-        
-    finally:
-        db.close()
-
+      
 
 # Main program
 if __name__ == "__main__":
