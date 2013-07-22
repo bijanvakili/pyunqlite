@@ -22,6 +22,7 @@ class UnqliteDatabase:
         if (getattr(self ,'util', None)):
             del self.util
         if (getattr(self,'_db', None)):
+            self._db.close()
             del self._db
 
 

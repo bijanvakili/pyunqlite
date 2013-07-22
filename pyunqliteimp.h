@@ -63,6 +63,9 @@ public:
     );
 	virtual ~UnqliteDatabaseImp();
 
+	virtual void close();
+	virtual bool is_open() const;
+
 	virtual void kv_store(
 		const std::string& key,
 		const std::string& value,

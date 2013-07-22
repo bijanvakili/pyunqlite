@@ -229,12 +229,27 @@ UnqliteDatabaseImp::UnqliteDatabaseImp()
 
 UnqliteDatabaseImp::UnqliteDatabaseImp(const UnqliteDatabaseImp& )
 {
-
 }
 
 UnqliteDatabaseImp::~UnqliteDatabaseImp()
 {
 	unqlite_close(this->_db);
+}
+
+void
+UnqliteDatabaseImp::close()
+{
+	if (is_open())
+	{
+		unqlite_close(this->_db);
+		this->_db = 0;
+	}
+}
+
+bool
+UnqliteDatabaseImp::is_open() const
+{
+	return (this->_db != 0);
 }
 
 void
