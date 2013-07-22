@@ -36,8 +36,8 @@ public:
 	UnqliteCursor(unqlite* db);
 	virtual ~UnqliteCursor();
 
-	void get_key(std::string& key);
-	void get_data(std::string& data);
+	std::string get_key();
+	std::string get_data();
 	void next();
 	bool is_valid() const;
 
@@ -78,7 +78,7 @@ public:
     	const std::string& key
     );
 
-    virtual UnqliteCursor kv_cursor();
+    virtual UnqliteCursor* kv_cursor();
 
     virtual unsigned int util_random_int();
     virtual std::string util_random_string(unsigned int len);

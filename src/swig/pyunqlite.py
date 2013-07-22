@@ -1,4 +1,4 @@
-from pyunqliteimp import UnqliteDatabaseImp, UnqliteCursor
+from pyunqliteimp import UnqliteDatabaseImp
 
 class UnqliteDatabase:
     # opens the database
@@ -20,9 +20,9 @@ class UnqliteDatabase:
     def close(self):
         # explicit removal of references to force closure
         if (getattr(self ,'util', None)):
-            self.util = None
+            del self.util
         if (getattr(self,'_db', None)):
-            self._db = None
+            del self._db
 
 
     """
@@ -64,16 +64,15 @@ class UnqliteDatabase:
     
     def kv_cursor(self, start=None):
         # TODO Implement 'start'
-        cursor = UnqliteCursor(self._db)
+        cursor = self._db.kv_cursor()
         while cursor.is_valid():
-            entry = {}
-            entry.key = cursor.get_key()
-            entry.data = cursor.get_data()
-            
-            yield entry
-            cursor.next() 
+            yield UnqliteEntry(cursor.get_key(), cursor.get_data())
+            cursor.next()
         
-
+class UnqliteEntry:
+    def __init__(self, key, data):
+        self.key = key
+        self.data = data
 
 class UnqliteUtil:
     def __init__(self, db):
@@ -81,7 +80,7 @@ class UnqliteUtil:
         
     def random(self, string_len=None):
         if string_len:
-            return self._db.util_random_string()
+            return self._db.util_random_string(string_len)
         else:
             return self._db.util_random_int()
     

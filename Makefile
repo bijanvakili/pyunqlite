@@ -26,4 +26,5 @@ $(WRAPPER_LIBRARY): pyunqliteimp.o pyunqliteimp_wrap.o
 %_wrap.cpp: %.i %.cpp %.h 
 	$(SWIG) $(SWIGFLAGS) -python -o $@ $<
 
-.PHONY: clean
+.PHONY: clean wrapper
+.SECONDARY: pyunqliteimp_wrap.cpp

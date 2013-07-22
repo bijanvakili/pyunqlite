@@ -23,7 +23,25 @@ extern "C" {
 /* Internal mapping generators */
 %include "stl.i"
 %include "std_string.i"
+%include "exception.i"
 
+/* General exception handler */
+/* TODO Create a python exception 'UnqliteException' */
+%exception {
+  try {
+    $action
+  } 
+  catch (const pyunqlite::UnqliteException& e) {
+    SWIG_exception(SWIG_RuntimeError, e.what());
+  }
+}
+
+%feature("ref")   pyunqlite::UnqliteCursor ""
+%feature("unref") pyunqlite::UnqliteCursor "delete $this;"
+
+%feature("ref")   pyunqlite::UnqliteDatabaseImp ""
+%feature("unref") pyunqlite::UnqliteDatabaseImp "delete $this;"
 
 /* Headers to parse to generate wrappers */
 %include "pyunqliteimp.h"
+

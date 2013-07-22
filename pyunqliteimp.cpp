@@ -31,11 +31,9 @@ UnqliteException::UnqliteException(int error_code, unqlite* pDB)
 	case UNQLITE_BUSY:
 		this->_error_text = "The database file is locked";
 		break;
-	/*
 	case UNQLITE_DONE:
 		this->_error_text = "Operation done";
 		break;
-	*/
 	case UNQLITE_PERM:
 		this->_error_text = "Permission error";
 		break;
@@ -153,31 +151,35 @@ UnqliteCursor::~UnqliteCursor()
 		throw UnqliteException(rc, this->_db);
 }
 
-void
-UnqliteCursor::get_key(std::string& key)
+std::string
+UnqliteCursor::get_key()
 {
 	int nBytes = 0;
 	unqlite_kv_cursor_key(this->_cursor, 0, &nBytes);
 
-	key.resize(nBytes);
+	std::string key(nBytes + 1, '\0');
 	unqlite_kv_cursor_key(this->_cursor, &key[0], &nBytes);
+
+	return key;
 }
 
-void
-UnqliteCursor::get_data(std::string& data)
+std::string
+UnqliteCursor::get_data()
 {
 	unqlite_int64 nBytes = 0;
 	unqlite_kv_cursor_data(this->_cursor, 0, &nBytes);
 
-	data.resize(nBytes);
+	std::string data(nBytes + 1, '\0');
 	unqlite_kv_cursor_data(this->_cursor, &data[0], &nBytes);
+
+	return data;
 }
 
 void
 UnqliteCursor::next()
 {
 	int rc = unqlite_kv_cursor_next_entry(this->_cursor);
-	if (rc != UNQLITE_OK)
+	if (rc != UNQLITE_OK  && rc != UNQLITE_DONE)
 		throw UnqliteException(rc, this->_db);
 }
 
@@ -202,11 +204,12 @@ UnqliteDatabaseImp::UnqliteDatabaseImp(
 	{
 		mode_flags |= UNQLITE_OPEN_CREATE;
 	}
-	else {
+	else
+	{
 		if (read_only)
 			mode_flags |= UNQLITE_OPEN_READONLY;
 		else
-			mode_flags |= UNQLITE_OPEN_READONLY;
+			mode_flags |= UNQLITE_OPEN_READWRITE;
 	}
 	if (temporary)
 		mode_flags |= UNQLITE_OPEN_TEMP_DB;
@@ -215,7 +218,7 @@ UnqliteDatabaseImp::UnqliteDatabaseImp(
 	if (!use_mutex)
 		mode_flags |= UNQLITE_OPEN_NOMUTEX;
 
-	int rc = unqlite_open(&this->_db, filename.c_str(), mode_flags);
+	int rc = unqlite_open(&(this->_db), filename.c_str(), mode_flags);
 	if (rc != UNQLITE_OK)
 		throw UnqliteException(rc);
 }
@@ -242,10 +245,11 @@ UnqliteDatabaseImp::kv_store(
 )
 {
 	int rc;
+	unqlite_int64 dataLen = value.length();
 	if (append)
-		rc = unqlite_kv_append(this->_db, key.c_str(), -1, value.c_str(), -1);
+		rc = unqlite_kv_append(this->_db, key.c_str(), -1, value.c_str(), dataLen);
 	else
-		rc = unqlite_kv_store(this->_db, key.c_str(), -1, value.c_str(), -1);
+		rc = unqlite_kv_store(this->_db, key.c_str(), -1, value.c_str(), dataLen);
 
 	if (rc != UNQLITE_OK)
 		throw UnqliteException(rc, this->_db);
@@ -257,13 +261,13 @@ UnqliteDatabaseImp::kv_fetch(
 	std::string& value
 )
 {
-	unqlite_int64 data_len = 0;
-	int rc = unqlite_kv_fetch(this->_db, key.c_str(), -1, 0, &data_len);
+	unqlite_int64 dataLen = 0;
+	int rc = unqlite_kv_fetch(this->_db, key.c_str(), -1, 0, &dataLen);
 	if (rc != UNQLITE_OK)
 		throw UnqliteException(rc, this->_db);
 
-	value.resize(data_len);
-	rc = unqlite_kv_fetch(this->_db, key.c_str(), -1, &value[0], &data_len);
+	value.resize(dataLen);
+	rc = unqlite_kv_fetch(this->_db, key.c_str(), -1, &value[0], &dataLen);
 	if (rc != UNQLITE_OK)
 		throw UnqliteException(rc, this->_db);
 }
@@ -278,10 +282,10 @@ UnqliteDatabaseImp::kv_delete(
 		throw UnqliteException(rc, this->_db);
 }
 
-UnqliteCursor
+UnqliteCursor*
 UnqliteDatabaseImp::kv_cursor()
 {
-	return UnqliteCursor(this->_db);
+	return new UnqliteCursor(this->_db);
 }
 
 unsigned int

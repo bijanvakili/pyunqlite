@@ -5,18 +5,14 @@ import sys
 def main(argv):
     
     # create the database
-    filename = argv[0] if len(argv) > 0 else None
-    
-    db = UnqliteDatabase(filename=filename, 
-                   create=True, 
-                   read_only=False,
-                   temporary=False,
-                   use_journaling=True,
-                   use_mutex=True)
+    kargs = {}
+    if len(argv) >= 2:
+        kargs['filename'] = argv[1]
+    db = UnqliteDatabase(**kargs) 
     
     try:
         # store some records
-        db.kv_store('msg', 'Hello')
+        db.kv_store('test', 'Hello')
         db.kv_store('date', 'dummy date: {0}:{1}:{2}'.format(2013, 06, 07))
         
         # append some values
@@ -33,11 +29,14 @@ def main(argv):
         # delete a record
         db.kv_delete('test')
         
-        print 'Done... starting the iteration process'
+        print 'Done inserts.'
+        print 'Starting the iteration process...'
         
         for entry in db.kv_cursor():
-            print '\db({0})={1}'.format(entry.key, entry.data)
-            
+            print 'db({0})={1}'.format(entry.key, entry.data)
+        
+        print 'Finished iteration process'
+        
     finally:
         db.close()
 
