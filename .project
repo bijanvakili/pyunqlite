@@ -21,6 +21,11 @@
 			<location>/home/bijanv/funspace/3rdparty</location>
 		</link>
 		<link>
+			<name>build</name>
+			<type>2</type>
+			<location>/home/bijanv/funspace/pyunqlite/.build</location>
+		</link>
+		<link>
 			<name>unqlite_src</name>
 			<type>2</type>
 			<location>/home/bijanv/tmp/unqlite</location>

@@ -1,5 +1,5 @@
 #from mock.pyunqlite import UnqliteDatabase
-from swig.pyunqlite import UnqliteDatabase
+from pyunqlite import UnqliteDatabase
 import sys
 
 def main(argv):
