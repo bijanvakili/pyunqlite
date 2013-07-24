@@ -21,15 +21,28 @@ dirs:
 clean:
 	$(RM) -r $(BUILD_DIR)
 
+WRAPPER_MODULES=$(BUILD_DIR)/pyunqliteimp_wrap.o \
+	$(BUILD_DIR)/UnqliteDatabaseImp.o \
+	$(BUILD_DIR)/UnqliteCursor.o \
+	$(BUILD_DIR)/UnqliteException.o
+	
+WRAPPER_HEADERS=$(CPPSRC_DIR)/UnqliteCommon.h \
+	$(CPPSRC_DIR)/UnqliteDatabaseImp.h \
+	$(CPPSRC_DIR)/UnqliteCursor.h \
+	$(CPPSRC_DIR)/UnqliteException.h
+
 wrapper: $(WRAPPER_LIBRARY)
 
-$(WRAPPER_LIBRARY): $(BUILD_DIR)/pyunqliteimp.o $(BUILD_DIR)/pyunqliteimp_wrap.o 
+$(WRAPPER_LIBRARY): $(WRAPPER_MODULES) 
 	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 $(BUILD_DIR)/%.o: $(CPPSRC_DIR)/%.cpp $(CPPSRC_DIR)/%.h dirs
 	$(CC) -c $(CXXFLAGS) -o $@ $<
 
-$(BUILD_DIR)/%_wrap.cpp: $(CPPSRC_DIR)/%.i $(CPPSRC_DIR)/%.cpp $(CPPSRC_DIR)/%.h 
+$(BUILD_DIR)/%_wrap.o: $(BUILD_DIR)/%_wrap.cpp
+	$(CC) -c $(CXXFLAGS) -o $@ $<
+
+$(BUILD_DIR)/%_wrap.cpp: $(CPPSRC_DIR)/%.i $(WRAPPER_HEADERS) dirs
 	$(SWIG) $(SWIGFLAGS) -python -o $@ $<
 
 .PHONY: clean wrapper dirs

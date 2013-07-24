@@ -16,7 +16,9 @@
 extern "C" {
 	#include "unqlite.h"
 };
-#include "pyunqliteimp.h"
+#include "UnqliteException.h"
+#include "UnqliteCursor.h"
+#include "UnqliteDatabaseImp.h"
 
 %}
 
@@ -43,5 +45,7 @@ extern "C" {
 %feature("unref") pyunqlite::UnqliteDatabaseImp "delete $this;"
 
 /* Headers to parse to generate wrappers */
-%include "pyunqliteimp.h"
+%include "UnqliteException.h"
+%include "UnqliteCursor.h"
+%include "UnqliteDatabaseImp.h"
 
