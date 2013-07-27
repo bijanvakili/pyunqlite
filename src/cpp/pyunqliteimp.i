@@ -53,7 +53,7 @@ pyunqliteimp_Shutdown()
   } 
   catch (const pyunqlite::UnqliteException& e) {
     PyErr_SetString(g_pUnqliteExceptionClass, const_cast<char*>(e.what()));
-    return NULL;
+    return 0;
   }
 }
 
