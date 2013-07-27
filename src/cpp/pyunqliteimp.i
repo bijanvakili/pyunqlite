@@ -23,6 +23,13 @@ extern "C" {
 /* Custon python exception */
 static PyObject* g_pUnqliteExceptionClass;
 
+/* Custom routines */
+void 
+pyunqliteimp_Shutdown()
+{
+	Py_XDECREF(g_pUnqliteExceptionClass);
+}
+
 %}
 
 /* Internal mapping generators */
@@ -35,6 +42,8 @@ static PyObject* g_pUnqliteExceptionClass;
     g_pUnqliteExceptionClass = PyErr_NewException(const_cast<char*>("_pyunqliteimp.UnqliteException"), NULL, NULL);
     Py_INCREF(g_pUnqliteExceptionClass);
     PyModule_AddObject(m, "UnqliteException", g_pUnqliteExceptionClass);
+    
+    atexit(pyunqliteimp_Shutdown);
 %}
 
 /* General exception handler */
