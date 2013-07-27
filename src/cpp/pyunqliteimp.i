@@ -20,6 +20,9 @@ extern "C" {
 #include "UnqliteCursor.h"
 #include "UnqliteDatabaseImp.h"
 
+/* Custon python exception */
+static PyObject* g_pUnqliteExceptionClass;
+
 %}
 
 /* Internal mapping generators */
@@ -27,16 +30,27 @@ extern "C" {
 %include "std_string.i"
 %include "exception.i"
 
+/* Create python exception */
+%init %{
+    g_pUnqliteExceptionClass = PyErr_NewException(const_cast<char*>("_pyunqliteimp.UnqliteException"), NULL, NULL);
+    Py_INCREF(g_pUnqliteExceptionClass);
+    PyModule_AddObject(m, "UnqliteException", g_pUnqliteExceptionClass);
+%}
+
 /* General exception handler */
-/* TODO Create a python exception 'UnqliteException' */
 %exception {
   try {
     $action
   } 
   catch (const pyunqlite::UnqliteException& e) {
-    SWIG_exception(SWIG_RuntimeError, e.what());
+    PyErr_SetString(g_pUnqliteExceptionClass, const_cast<char*>(e.what()));
+    return NULL;
   }
 }
+
+%pythoncode %{
+	UnqliteException = _pyunqliteimp.UnqliteException
+%}
 
 %feature("ref")   pyunqlite::UnqliteCursor ""
 %feature("unref") pyunqlite::UnqliteCursor "delete $this;"
@@ -45,7 +59,5 @@ extern "C" {
 %feature("unref") pyunqlite::UnqliteDatabaseImp "delete $this;"
 
 /* Headers to parse to generate wrappers */
-%include "UnqliteException.h"
 %include "UnqliteCursor.h"
 %include "UnqliteDatabaseImp.h"
-

@@ -1,5 +1,6 @@
 #from mock.pyunqlite import UnqliteDatabase
-from pyunqlite import UnqliteDatabase
+from pyunqlite import UnqliteDatabase, UnqliteException
+#from pyunqliteimp import UnqliteException
 import sys
 
 def main(argv):
@@ -42,6 +43,10 @@ if __name__ == "__main__":
     try:
         main(sys.argv)
 
+    except UnqliteException as e:
+        print >>sys.stderr, 'unqlite error: ' + str(e)
+        sys.exit(1)
+
     except Exception as e:
-        print >>sys.stderr, e
+        print >>sys.stderr, 'runtime error: ' + str(e)
         sys.exit(1)

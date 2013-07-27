@@ -1,4 +1,9 @@
-from pyunqliteimp import UnqliteDatabaseImp
+import pyunqliteimp
+import _pyunqliteimp
+
+# thin wrapper for exception
+UnqliteException = _pyunqliteimp.UnqliteException
+
 
 class UnqliteDatabase:
     # opens the database
@@ -7,7 +12,7 @@ class UnqliteDatabase:
                  use_journaling=True, use_mutex=True):
         
         # setup the database and utility handle
-        self._db = UnqliteDatabaseImp(filename, create, read_only,
+        self._db = pyunqliteimp.UnqliteDatabaseImp(filename, create, read_only,
                                       temporary, use_journaling, use_mutex)
         
         self.util = UnqliteUtil(self._db)
