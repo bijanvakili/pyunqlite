@@ -11,12 +11,12 @@ class UnqliteDatabaseImp
 {
 public:
 	UnqliteDatabaseImp(
-		const std::string& filename,
-		bool create,
-		bool read_only,
-		bool temporary,
-        bool use_journaling,
-        bool use_mutex
+		const char* filename=":mem:",
+		bool create=true,
+		bool read_only=false,
+		bool temporary=false,
+		bool use_journaling=true,
+		bool use_mutex=true
     );
 	virtual ~UnqliteDatabaseImp();
 
@@ -24,18 +24,32 @@ public:
 	virtual bool is_open() const;
 
 	virtual void kv_store(
-		const std::string& key,
-		const std::string& value,
-		bool append
+		const char* key,
+		const char* value,
+		int key_len=-1,
+		sxi64 value_len=-1,
+		bool append=false
 	);
 
-    virtual void kv_fetch(
-    	const std::string& key,
-    	std::string& value
+	// returns the data
+	// TODO how to differentiate string result from binary?
+	// TODO allow specifying custom buffer?
+    virtual char* kv_fetch(
+    	const char* key,
+    	int key_len=-1,
+    	sxi64 value_len=-1,
+    	bool with_null_terminator=true
+    );
+
+    // returns only the length of data within the buffer
+    virtual sxi64 kv_fetch_len(
+		const char* key,
+		int key_len=-1
     );
 
     virtual void kv_delete(
-    	const std::string& key
+    	const char* key,
+    	int key_len=-1
     );
 
     virtual UnqliteCursor* kv_cursor();

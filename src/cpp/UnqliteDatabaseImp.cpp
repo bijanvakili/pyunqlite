@@ -1,13 +1,15 @@
+#include <string.h>
 extern "C" {
 #include "unqlite.h"
 };
+
 #include "UnqliteDatabaseImp.h"
 
 namespace pyunqlite
 {
 
 UnqliteDatabaseImp::UnqliteDatabaseImp(
-	const std::string& filename,
+	const char* filename,
 	bool create,
 	bool read_only,
 	bool temporary,
@@ -34,7 +36,7 @@ UnqliteDatabaseImp::UnqliteDatabaseImp(
 	if (!use_mutex)
 		mode_flags |= UNQLITE_OPEN_NOMUTEX;
 
-	int rc = unqlite_open(&(this->_db), filename.c_str(), mode_flags);
+	int rc = unqlite_open(&(this->_db), filename, mode_flags);
 	if (rc != UNQLITE_OK)
 		throw UnqliteException(rc);
 }
@@ -70,45 +72,81 @@ UnqliteDatabaseImp::is_open() const
 
 void
 UnqliteDatabaseImp::kv_store(
-	const std::string& key,
-	const std::string& value,
+	const char* key,
+	const char* value,
+	int key_len,
+	sxi64 value_len,
 	bool append
 )
 {
 	int rc;
-	unqlite_int64 dataLen = value.length();
+
+	// for negative length, assume the value is a string
+	if ( value_len < 0 )
+		value_len = strlen(value);
+
 	if (append)
-		rc = unqlite_kv_append(this->_db, key.c_str(), -1, value.c_str(), dataLen);
+		rc = unqlite_kv_append(this->_db, key, key_len, value, value_len);
 	else
-		rc = unqlite_kv_store(this->_db, key.c_str(), -1, value.c_str(), dataLen);
+		rc = unqlite_kv_store(this->_db, key, key_len, value, value_len);
 
 	if (rc != UNQLITE_OK)
 		throw UnqliteException(rc, this->_db);
 }
 
-void
+char*
 UnqliteDatabaseImp::kv_fetch(
-	const std::string& key,
-	std::string& value
+	const char* key,
+	int key_len,
+	sxi64 value_len,
+	bool with_null_terminator
 )
 {
-	unqlite_int64 dataLen = 0;
-	int rc = unqlite_kv_fetch(this->_db, key.c_str(), -1, 0, &dataLen);
+	// determine the size of the stored data if it is unknown
+	if (value_len < 0)
+		value_len = kv_fetch_len(key, key_len);
+
+	// an an extra byte if a null terminator is expected
+	if (with_null_terminator)
+		value_len += 1;
+
+	// allocate buffer to retrieve the value
+	char* buffer = new char[value_len];
+	if (!buffer)
+		throw UnqliteException(UNQLITE_NOMEM);
+	if (with_null_terminator)
+		buffer[value_len - 1] = 0;
+
+	// retrieve the data
+	int rc = unqlite_kv_fetch(this->_db, key, key_len, buffer, &value_len);
 	if (rc != UNQLITE_OK)
 		throw UnqliteException(rc, this->_db);
 
-	value.resize(dataLen);
-	rc = unqlite_kv_fetch(this->_db, key.c_str(), -1, &value[0], &dataLen);
+	return buffer;
+}
+
+sxi64
+UnqliteDatabaseImp::kv_fetch_len(
+	const char* key,
+	int key_len
+)
+{
+	unqlite_int64 data_len = 0;
+	int rc = unqlite_kv_fetch(this->_db, key, key_len, 0, &data_len);
 	if (rc != UNQLITE_OK)
 		throw UnqliteException(rc, this->_db);
+
+	return data_len;
 }
+
 
 void
 UnqliteDatabaseImp::kv_delete(
-	const std::string& key
+	const char* key,
+	int key_len
 )
 {
-	int rc = unqlite_kv_delete(this->_db, key.c_str(), -1);
+	int rc = unqlite_kv_delete(this->_db, key, key_len);
 	if (rc != UNQLITE_OK)
 		throw UnqliteException(rc, this->_db);
 }

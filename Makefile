@@ -7,7 +7,7 @@ CPPSRC_DIR=src/cpp
 
 CFLAGS= -g -fPIC -I/usr/include/python2.7 -I$(THIRDPARTY_DIR)/include -I$(CPPSRC_DIR)
 CXXFLAGS=$(CFLAGS)
-SWIGFLAGS=-I$(THIRDPARTY_DIR)/include -c++ -builtin
+SWIGFLAGS=-I$(THIRDPARTY_DIR)/include -c++ -builtin -keyword
 LDFLAGS= -g -shared -L$(THIRDPARTY_DIR)/lib
 LDLIBS= -lunqlite
 

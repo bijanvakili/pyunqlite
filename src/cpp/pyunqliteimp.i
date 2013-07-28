@@ -6,7 +6,8 @@
 %module pyunqliteimp
 #endif
 
-%{
+%header %{
+
 #define SWIG
 #define SWIG_FILE_WITH_INIT
 
@@ -30,10 +31,11 @@ pyunqliteimp_Shutdown()
 	Py_XDECREF(g_pUnqliteExceptionClass);
 }
 
-%}
+%} /* %header */
+
 
 /* Internal mapping generators */
-%include "stl.i"
+/*%include "stl.i"*/
 %include "std_string.i"
 %include "exception.i"
 
@@ -61,11 +63,13 @@ pyunqliteimp_Shutdown()
 	UnqliteException = _pyunqliteimp.UnqliteException
 %}
 
+/* TODO cleanup cursor */
 %feature("ref")   pyunqlite::UnqliteCursor ""
 %feature("unref") pyunqlite::UnqliteCursor "delete $this;"
 
-%feature("ref")   pyunqlite::UnqliteDatabaseImp ""
-%feature("unref") pyunqlite::UnqliteDatabaseImp "delete $this;"
+%typemap(newfree) char* "delete($1);";
+%newobject pyunqlite::UnqliteDatabaseImp::kv_fetch;
+
 
 /* Headers to parse to generate wrappers */
 %include "UnqliteCursor.h"
