@@ -73,56 +73,50 @@ UnqliteDatabaseImp::is_open() const
 void
 UnqliteDatabaseImp::kv_store(
 	const char* key,
-	const char* value,
-	int key_len,
+	const ValueBuffer& value,
 	sxi64 value_len,
+	int key_len,
 	bool append
 )
 {
 	int rc;
 
-	// for negative length, assume the value is a string
+	// for negative length, store the entire contents of the value
 	if ( value_len < 0 )
-		value_len = strlen(value);
+		value_len = value.get_data_len();
 
 	if (append)
-		rc = unqlite_kv_append(this->_db, key, key_len, value, value_len);
+		rc = unqlite_kv_append(this->_db, key, key_len, value.get_data(), value_len);
 	else
-		rc = unqlite_kv_store(this->_db, key, key_len, value, value_len);
+		rc = unqlite_kv_store(this->_db, key, key_len, value.get_data(), value_len);
 
 	if (rc != UNQLITE_OK)
 		throw UnqliteException(rc, this->_db);
 }
 
-char*
+ValueBuffer*
 UnqliteDatabaseImp::kv_fetch(
 	const char* key,
+	bool as_binary,
 	int key_len,
-	sxi64 value_len,
-	bool with_null_terminator
+	sxi64 value_len
 )
 {
 	// determine the size of the stored data if it is unknown
 	if (value_len < 0)
 		value_len = kv_fetch_len(key, key_len);
 
-	// an an extra byte if a null terminator is expected
-	if (with_null_terminator)
-		value_len += 1;
-
-	// allocate buffer to retrieve the value
-	char* buffer = new char[value_len];
-	if (!buffer)
+	// create the buffer
+	ValueBuffer* value = new ValueBuffer(as_binary, value_len);
+	if (!value)
 		throw UnqliteException(UNQLITE_NOMEM);
-	if (with_null_terminator)
-		buffer[value_len - 1] = 0;
 
 	// retrieve the data
-	int rc = unqlite_kv_fetch(this->_db, key, key_len, buffer, &value_len);
+	int rc = unqlite_kv_fetch(this->_db, key, key_len, value->get_data(), &value_len);
 	if (rc != UNQLITE_OK)
 		throw UnqliteException(rc, this->_db);
 
-	return buffer;
+	return value;
 }
 
 sxi64

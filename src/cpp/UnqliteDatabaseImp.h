@@ -1,6 +1,10 @@
+#ifndef _UNQLITE_DATABASEIMP_H
+#define _UNQLITE_DATABASEIMP_H
+
 #include "UnqliteCommon.h"
 #include "UnqliteException.h"
 #include "UnqliteCursor.h"
+#include "ValueBuffer.h"
 
 namespace pyunqlite
 {
@@ -25,20 +29,19 @@ public:
 
 	virtual void kv_store(
 		const char* key,
-		const char* value,
-		int key_len=-1,
+		const pyunqlite::ValueBuffer& value,
 		sxi64 value_len=-1,
+		int key_len=-1,
 		bool append=false
 	);
 
 	// returns the data
-	// TODO how to differentiate string result from binary?
 	// TODO allow specifying custom buffer?
-    virtual char* kv_fetch(
+    virtual pyunqlite::ValueBuffer* kv_fetch(
     	const char* key,
+    	bool as_binary=false,
     	int key_len=-1,
-    	sxi64 value_len=-1,
-    	bool with_null_terminator=true
+    	sxi64 value_len=-1
     );
 
     // returns only the length of data within the buffer
@@ -67,3 +70,5 @@ private:
 };
 
 } // namespace pyunqlite
+
+#endif // _UNQLITE_DATABASEIMP_H

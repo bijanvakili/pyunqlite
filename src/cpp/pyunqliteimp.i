@@ -20,6 +20,7 @@ extern "C" {
 #include "UnqliteException.h"
 #include "UnqliteCursor.h"
 #include "UnqliteDatabaseImp.h"
+#include "ValueBuffer.h"
 
 /* Custon python exception */
 static PyObject* g_pUnqliteExceptionClass;
@@ -35,11 +36,10 @@ pyunqliteimp_Shutdown()
 
 
 /* Internal mapping generators */
-/*%include "stl.i"*/
 %include "std_string.i"
 %include "exception.i"
 
-/* Create python exception */
+/* Create a custom python exception (UnqliteException) */
 %init %{
     g_pUnqliteExceptionClass = PyErr_NewException(const_cast<char*>("_pyunqliteimp.UnqliteException"), NULL, NULL);
     Py_INCREF(g_pUnqliteExceptionClass);
@@ -63,13 +63,58 @@ pyunqliteimp_Shutdown()
 	UnqliteException = _pyunqliteimp.UnqliteException
 %}
 
-/* TODO cleanup cursor */
+/* TODO fix cursor to use ValueBuffer */
 %feature("ref")   pyunqlite::UnqliteCursor ""
 %feature("unref") pyunqlite::UnqliteCursor "delete $this;"
 
-%typemap(newfree) char* "delete($1);";
-%newobject pyunqlite::UnqliteDatabaseImp::kv_fetch;
+%typemap(in) sxi64 {
+	$1 = PyLong_AsLongLong($input);
+}
 
+%typemap(out) sxi64 {
+	$result = PyLong_FromLongLong($1);
+}
+
+/* Encapsulate 'value' as a string or byte buffer */
+%typemap(in) const pyunqlite::ValueBuffer& value {
+
+	if (PyString_Check($input)) {
+		$1 = new pyunqlite::ValueBuffer(false, PyString_Size($input), PyString_AsString($input));  
+	}
+	else if(PyByteArray_Check($input)) {
+		$1 = new pyunqlite::ValueBuffer(true, PyByteArray_Size($input), PyByteArray_AsString($input));
+	}
+	else {
+		PyErr_SetString(PyExc_ValueError, "Expecting a string or byte array");
+		return 0;
+	}
+	
+	if (!$1) {
+		PyErr_SetString(PyExc_MemoryError, "Unable to allocate metadata for buffer");
+		return 0;
+	}
+}
+
+%typemap(freearg) const pyunqlite::ValueBuffer& value {
+	delete $1;
+}
+
+%typemap(out) pyunqlite::ValueBuffer* {
+	if ($1->is_binary()) {
+		$result = PyByteArray_FromStringAndSize(
+			static_cast< const char* >($1->get_data()),
+			$1->get_data_len()
+		);
+	}
+	else {
+		$result = PyString_FromStringAndSize(
+			static_cast< const char* >($1->get_data()),
+			$1->get_data_len()
+		);
+	}
+	
+	delete $1;
+}
 
 /* Headers to parse to generate wrappers */
 %include "UnqliteCursor.h"

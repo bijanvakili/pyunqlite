@@ -23,10 +23,13 @@ def main(argv):
         for _ in xrange(20):
             key = db.util_random_string(len=11)
             db.kv_store(key, data)
+
+        # retrieve a record
+        data = db.kv_fetch('test')
+        data_len = db.kv_fetch_len('test')
+        print 'test = "{0}" with length={1}'.format(data, data_len) 
         
         # delete a record
-        data = db.kv_fetch('test')
-        print 'test = ' + data 
         db.kv_delete('test')
         
         print 'Done inserts.'

@@ -24,12 +24,14 @@ clean:
 WRAPPER_MODULES=$(BUILD_DIR)/pyunqliteimp_wrap.o \
 	$(BUILD_DIR)/UnqliteDatabaseImp.o \
 	$(BUILD_DIR)/UnqliteCursor.o \
-	$(BUILD_DIR)/UnqliteException.o
+	$(BUILD_DIR)/UnqliteException.o \
+	$(BUILD_DIR)/ValueBuffer.o
 	
 WRAPPER_HEADERS=$(CPPSRC_DIR)/UnqliteCommon.h \
 	$(CPPSRC_DIR)/UnqliteDatabaseImp.h \
 	$(CPPSRC_DIR)/UnqliteCursor.h \
-	$(CPPSRC_DIR)/UnqliteException.h
+	$(CPPSRC_DIR)/UnqliteException.h \
+	$(CPPSRC_DIR)/ValueBuffer.h
 
 wrapper: $(WRAPPER_LIBRARY)
 
