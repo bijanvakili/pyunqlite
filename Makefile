@@ -44,6 +44,8 @@ $(BUILD_DIR)/%.o: $(CPPSRC_DIR)/%.cpp $(CPPSRC_DIR)/%.h dirs
 $(BUILD_DIR)/%_wrap.o: $(BUILD_DIR)/%_wrap.cpp
 	$(CC) -c $(CXXFLAGS) -o $@ $<
 
+$(CPPSRC_DIR)/pyunqlite.i: $(CPPSRC_DIR)/valuebuffer.i 
+
 $(BUILD_DIR)/%_wrap.cpp: $(CPPSRC_DIR)/%.i $(WRAPPER_HEADERS) dirs
 	$(SWIG) $(SWIGFLAGS) -python -o $@ $<
 
