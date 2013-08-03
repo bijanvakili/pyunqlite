@@ -76,6 +76,7 @@ pyunqliteimp_Shutdown()
 }
 
 %include "valuebuffer.i"
+
 /* Headers to parse to generate wrappers */
 %include "UnqliteCursor.h"
 %include "UnqliteDatabaseImp.h"

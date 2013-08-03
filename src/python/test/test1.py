@@ -20,8 +20,11 @@ def main(argv):
         
         # store 20 random records
         data = 'dummy data'
-        for _ in xrange(20):
+        halfway_key = None
+        for i in xrange(20):
             key = db.util_random_string(len=11)
+            if i == 10:
+                halfway_key = key
             db.kv_store(key, data)
 
         # retrieve a record
@@ -37,6 +40,11 @@ def main(argv):
         
         for entry in db.kv_cursor():
             print 'db({0})={1}'.format(entry.key, entry.data)
+            
+        print 'Restart iteration at selected key: ' + halfway_key
+        for entry in db.kv_cursor(start=halfway_key):
+            print 'db({0})={1}'.format(entry.key, entry.data)
+  
         
         print 'Finished iteration process'
       

@@ -36,6 +36,7 @@ public:
 	);
 
 	// returns the data
+	// TODO kv_fetch() with callback
 	// TODO allow specifying custom buffer?
     virtual pyunqlite::ValueBuffer* kv_fetch(
     	const char* key,
