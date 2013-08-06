@@ -94,16 +94,30 @@ UnqliteCursor::get_key(int key_len)
 ValueBuffer*
 UnqliteCursor::get_data(
 	bool as_binary,
-	sxi64 value_len
+	sxi64 value_len,
+	pyunqlite::ValueBuffer* direct_buffer
 )
 {
-	if (value_len < 0)
-		value_len = get_data_len();
+	// setup the buffer for retrieving data
+	ValueBuffer* value = 0;
+	if (direct_buffer) {
+		if (value_len < 0)
+			value_len = direct_buffer->get_data_len();
+		else if (direct_buffer->get_data_len() < value_len)
+			throw UnqliteException(UNQLITE_INVALID);
 
-	// create the buffer
-	ValueBuffer* value = new ValueBuffer(as_binary, value_len);
-	if (!value)
-		throw UnqliteException(UNQLITE_NOMEM);
+		value = new ValueBuffer(*direct_buffer);
+	}
+	else {
+		// determine the size of the stored data if it is unknown
+		if (value_len < 0)
+			value_len = get_data_len();
+
+		// create a new buffer
+		value = new ValueBuffer(as_binary, value_len);
+		if (!value)
+			throw UnqliteException(UNQLITE_NOMEM);
+	}
 
 
 	int rc = unqlite_kv_cursor_data(this->_cursor, value->get_data(), &value_len);

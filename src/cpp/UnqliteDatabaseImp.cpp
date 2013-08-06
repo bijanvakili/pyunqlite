@@ -99,15 +99,29 @@ UnqliteDatabaseImp::kv_fetch(
 	const char* key,
 	bool as_binary,
 	int key_len,
-	sxi64 value_len
+	sxi64 value_len,
+	pyunqlite::ValueBuffer* direct_buffer
 )
 {
-	// determine the size of the stored data if it is unknown
-	if (value_len < 0)
-		value_len = kv_fetch_len(key, key_len);
+	// setup the buffer for retrieving data
+	ValueBuffer* value = 0;
+	if (direct_buffer) {
+		if (value_len < 0)
+			value_len = direct_buffer->get_data_len();
+		else if (direct_buffer->get_data_len() < value_len)
+			throw UnqliteException(UNQLITE_INVALID);
 
-	// create the buffer
-	ValueBuffer* value = new ValueBuffer(as_binary, value_len);
+		value = new ValueBuffer(*direct_buffer);
+	}
+	else {
+		// determine the size of the stored data if it is unknown
+		if (value_len < 0)
+			value_len = kv_fetch_len(key, key_len);
+
+		// create a new buffer
+		value = new ValueBuffer(as_binary, value_len);
+	}
+
 	if (!value)
 		throw UnqliteException(UNQLITE_NOMEM);
 

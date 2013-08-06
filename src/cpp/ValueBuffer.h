@@ -19,12 +19,12 @@ class ValueBuffer
 public:
 	ValueBuffer(PyObject* object);
 	ValueBuffer(bool is_binary, sxi64 data_len);
+	ValueBuffer(const ValueBuffer& rhs);
 	virtual ~ValueBuffer();
 
 	bool is_binary() const;
 	char* get_data() const;
 	sxi64 get_data_len() const;
-
 	PyObject* get_python_object() const;
 
 protected:
@@ -37,7 +37,6 @@ protected:
 private:
 	// disallowed
 	ValueBuffer();
-	ValueBuffer(const ValueBuffer&);
 };
 
 } //namespace pyunqlite

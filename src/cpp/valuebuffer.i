@@ -15,6 +15,19 @@
 	delete $1;
 }
 
+%typemap(in) pyunqlite::ValueBuffer* direct_buffer {
+	$1 = new pyunqlite::ValueBuffer($input);  
+	if (!$1) {
+		PyErr_SetString(PyExc_MemoryError, "Unable to allocate metadata for buffer");
+		return 0;
+	}
+}
+
+%typemap(freearg) pyunqlite::ValueBuffer* direct_buffer {
+	delete $1;
+}
+
+
 %typemap(out) pyunqlite::ValueBuffer* {
 	$result = $1->get_python_object();
 	

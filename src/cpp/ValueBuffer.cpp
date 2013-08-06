@@ -25,6 +25,8 @@ ValueBuffer::ValueBuffer(PyObject* object)
 		PyErr_SetString(PyExc_ValueError, "Expecting a string or byte array");
 		throw UnqliteException(UNQLITE_INVALID);
 	}
+
+	Py_INCREF(this->_object);
 }
 
 ValueBuffer::ValueBuffer(bool is_binary, sxi64 data_len)
@@ -47,10 +49,26 @@ ValueBuffer::ValueBuffer(bool is_binary, sxi64 data_len)
 	}
 
 	this->_data_len = data_len;
+	Py_INCREF(this->_object);
+}
+
+ValueBuffer::ValueBuffer(const ValueBuffer& copy)
+{
+	this->_is_binary = copy._is_binary;
+	this->_object = copy._object;
+	Py_INCREF(this->_object);
+	this->_data = copy._data;
+	this->_data_len = copy._data_len;
+
 }
 
 ValueBuffer::~ValueBuffer()
 {
+	if (this->_object)
+	{
+		Py_DECREF(this->_object);
+		this->_object = 0;
+	}
 }
 
 bool
@@ -74,14 +92,11 @@ ValueBuffer::get_data_len() const
 PyObject*
 ValueBuffer::get_python_object() const
 {
+	Py_INCREF(this->_object);
 	return this->_object;
 }
 
 ValueBuffer::ValueBuffer()
-{
-}
-
-ValueBuffer::ValueBuffer(const ValueBuffer&)
 {
 }
 

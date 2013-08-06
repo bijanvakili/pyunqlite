@@ -37,12 +37,12 @@ public:
 
 	// returns the data
 	// TODO kv_fetch() with callback
-	// TODO allow specifying custom buffer?
     virtual pyunqlite::ValueBuffer* kv_fetch(
     	const char* key,
     	bool as_binary=false,
     	int key_len=-1,
-    	sxi64 value_len=-1
+    	sxi64 value_len=-1,
+    	pyunqlite::ValueBuffer* direct_buffer=0
     );
 
     // returns only the length of data within the buffer

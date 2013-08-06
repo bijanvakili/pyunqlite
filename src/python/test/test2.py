@@ -31,16 +31,17 @@ def main(argv):
         
         # store and retrieve a binary stream
         barr = bytearray.fromhex("de ad be ef")
-        
-        # fix value_len!!
         db.kv_store(key='test_bin', value=barr, value_len=len(barr))
-        
         res = db.kv_fetch(key='test_bin', as_binary=True)
         if not isinstance(res, bytearray):
             raise TestException('test_bin is not a bytearray')
         
-        print 'test_bin =(' + ''.join( ['%02x ' % x for x in res] ).strip() + ')'
+        print 'res =(' + ''.join( ['%02x ' % x for x in res] ).strip() + ')'
         
+        # load an array directly
+        barr2 = bytearray.fromhex("ef ef ef")
+        db.kv_fetch(key='test_bin', as_binary=True, value_len=3, direct_buffer=barr2)
+        print 'barr2 =(' + ''.join( ['%02x ' % x for x in barr2] ).strip() + ')'
 
 # Main program
 if __name__ == "__main__":
