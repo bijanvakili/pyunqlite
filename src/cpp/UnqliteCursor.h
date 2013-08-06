@@ -23,6 +23,7 @@ public:
 
 	virtual pyunqlite::ValueBuffer* get_key(int key_len=-1);
 	// TODO get_data() with callback
+	// TODO allow specifying custom buffer?
 	virtual pyunqlite::ValueBuffer* get_data(
 		bool as_binary=false,
 		sxi64 value_len=-1

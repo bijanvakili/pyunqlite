@@ -3,6 +3,13 @@
 
 #include "UnqliteCommon.h"
 
+// forward declarations
+#ifndef Py_OBJECT_H
+extern "C" {
+typedef struct _object PyObject;
+}; // extern "C"
+#endif // Py_OBJECT_H
+
 namespace pyunqlite
 {
 
@@ -10,7 +17,7 @@ namespace pyunqlite
 class ValueBuffer
 {
 public:
-	ValueBuffer(bool is_binary, sxi64 data_len, char* data);
+	ValueBuffer(PyObject* object);
 	ValueBuffer(bool is_binary, sxi64 data_len);
 	virtual ~ValueBuffer();
 
@@ -18,9 +25,12 @@ public:
 	char* get_data() const;
 	sxi64 get_data_len() const;
 
+	PyObject* get_python_object() const;
+
 protected:
-	bool _is_allocated;
 	bool _is_binary;
+	PyObject* _object;
+
 	char* _data;
 	sxi64 _data_len;
 

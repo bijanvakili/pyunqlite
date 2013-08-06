@@ -63,7 +63,7 @@ pyunqliteimp_Shutdown()
 	UnqliteException = _pyunqliteimp.UnqliteException
 %}
 
-/* TODO fix cursor to use ValueBuffer */
+%newobject pyunqlite::UnqliteDatabaseImp::kv_cursor;
 %feature("ref")   pyunqlite::UnqliteCursor ""
 %feature("unref") pyunqlite::UnqliteCursor "delete $this;"
 
