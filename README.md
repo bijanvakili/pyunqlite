@@ -1,14 +1,16 @@
 # pyunqlite
 
-A python client library for unqlite embedded NoSQL database
+A python client library for the unqlite embedded NoSQL database
+
+pyunqlite is licensed under the [MIT license](http://www.opensource.org/licenses/mit-license.php)
 
 ## Building
 
 ### Requirements
 
-1. python and development headers
-2. SWIG
-3. unqlite
+1. [python](http://www.python.org/) and development headers
+2. [SWIG](http://www.swig.org/)
+3. [unqlite](http://unqlite.org/)
 
 ### Building from source
 
@@ -42,4 +44,4 @@ You can then run the test scripts as follows:
 
 ## Testing Notes
 
-Development and testing has so far taken place only Ubuntu Linux v12.04 LTS
+Development and testing has so far taken place only on Ubuntu Linux v12.04 LTS
