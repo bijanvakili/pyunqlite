@@ -1,14 +1,14 @@
-CC=g++
-SWIG=swig
+CXX=@CXX@
+SWIG=@SWIGBIN@
 
-THIRDPARTY_DIR=../3rdparty
 BUILD_DIR=.build
+
+# TODO Move C++ build steps to a separate Makefile in the CPPSRC_DIR below
 CPPSRC_DIR=src/cpp
 
-CFLAGS= -g -fPIC -I/usr/include/python2.7 -I$(THIRDPARTY_DIR)/include -I$(CPPSRC_DIR)
-CXXFLAGS=$(CFLAGS)
-SWIGFLAGS=-I$(THIRDPARTY_DIR)/include -c++ -builtin -keyword
-LDFLAGS= -g -shared -L$(THIRDPARTY_DIR)/lib
+CXXFLAGS= -fPIC -I$(CPPSRC_DIR) @CXXFLAGS@ @CPPFLAGS@
+SWIGFLAGS= @CPPFLAGS@ -c++ -builtin -keyword
+LDFLAGS= -fPIC -shared @LDFLAGS@
 LDLIBS= -lunqlite
 
 WRAPPER_LIBRARY=$(BUILD_DIR)/_pyunqliteimp.so
@@ -36,13 +36,13 @@ WRAPPER_HEADERS=$(CPPSRC_DIR)/UnqliteCommon.h \
 wrapper: $(WRAPPER_LIBRARY)
 
 $(WRAPPER_LIBRARY): $(WRAPPER_MODULES) 
-	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 $(BUILD_DIR)/%.o: $(CPPSRC_DIR)/%.cpp $(CPPSRC_DIR)/%.h dirs
-	$(CC) -c $(CXXFLAGS) -o $@ $<
+	$(CXX) -c $(CXXFLAGS) -o $@ $<
 
 $(BUILD_DIR)/%_wrap.o: $(BUILD_DIR)/%_wrap.cpp
-	$(CC) -c $(CXXFLAGS) -o $@ $<
+	$(CXX) -c $(CXXFLAGS) -o $@ $<
 
 $(CPPSRC_DIR)/pyunqlite.i: $(CPPSRC_DIR)/valuebuffer.i 
 

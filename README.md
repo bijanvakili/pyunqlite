@@ -14,17 +14,12 @@ pyunqlite is licensed under the [MIT license](http://www.opensource.org/licenses
 
 ### Building from source
 
-This project is not yet using GNU Autotools.  For now, you need to use environment variables and the Makefile directly.
+(TODO: Build scripts not using libtool not implemented yet)
+Run the following:
 
-If you wish to keep third party libraries in a 'sandbox' environment, use the following environment variable:
-
-    export THIRDPARTY_DIR=/path/to/my/sandbox
-
-(NOTE: This is the 'prefix' directory that contains 'include', 'lib', etc.)
-
-Then just run:
-
+    ./configure
     make
+
 
 ## Execution
 
@@ -33,7 +28,7 @@ The wrapper and shared library will be found in the '.build' subfolder.
 Until an 'install' target is created, you need to setup the following environment variables for the
 shared library and python load paths:
 
-    export LD_LIBRARY_PATH="$THIRDPARTY_DIR)/lib":`pwd`/.build
+    export LD_LIBRARY_PATH=`pwd`/.build
     export PYTHONPATH=`pwd`/src/python:`pwd`/.build
 
 You can then run the test scripts as follows:
