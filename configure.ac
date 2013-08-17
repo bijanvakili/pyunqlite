@@ -72,5 +72,5 @@ AC_CHECK_HEADER([unqlite.h], [], AC_MSG_ERROR([unqlite headers not found.]),
 AC_CHECK_LIB([unqlite], [unqlite_lib_ident], [], AC_MSG_ERROR([unqlite library not found.]), [-lpthread])
 
 # Update files
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile src/cpp/Makefile])
 AC_OUTPUT

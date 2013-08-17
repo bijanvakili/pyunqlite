@@ -1,0 +1,50 @@
+CXX=@CXX@
+SWIG=@SWIGBIN@
+
+BUILD_DIR=../../.build
+
+CXXFLAGS= -fPIC -I. @CXXFLAGS@ @CPPFLAGS@
+SWIGFLAGS= @CPPFLAGS@ -c++ -builtin -keyword
+LDFLAGS= -fPIC -shared @LDFLAGS@
+LDLIBS= -lunqlite
+
+WRAPPER_LIBRARY=$(BUILD_DIR)/_pyunqliteimp.so
+
+all: wrapper
+
+dirs:
+	mkdir -p $(BUILD_DIR)
+
+clean:
+	$(RM) -r $(BUILD_DIR)
+
+WRAPPER_MODULES=$(BUILD_DIR)/pyunqliteimp_wrap.o \
+	$(BUILD_DIR)/UnqliteDatabaseImp.o \
+	$(BUILD_DIR)/UnqliteCursor.o \
+	$(BUILD_DIR)/UnqliteException.o \
+	$(BUILD_DIR)/ValueBuffer.o
+	
+WRAPPER_HEADERS=UnqliteCommon.h \
+	UnqliteDatabaseImp.h \
+	UnqliteCursor.h \
+	UnqliteException.h \
+	ValueBuffer.h
+
+wrapper: $(WRAPPER_LIBRARY)
+
+$(WRAPPER_LIBRARY): $(WRAPPER_MODULES) 
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+
+$(BUILD_DIR)/%.o: %.cpp %.h dirs
+	$(CXX) -c $(CXXFLAGS) -o $@ $<
+
+$(BUILD_DIR)/%_wrap.o: $(BUILD_DIR)/%_wrap.cpp
+	$(CXX) -c $(CXXFLAGS) -o $@ $<
+
+pyunqlite.i: valuebuffer.i 
+
+$(BUILD_DIR)/%_wrap.cpp: %.i $(WRAPPER_HEADERS) dirs
+	$(SWIG) $(SWIGFLAGS) -python -o $@ $<
+
+.PHONY: clean wrapper dirs
+.SECONDARY: $(BUILD_DIR)/pyunqliteimp_wrap.cpp

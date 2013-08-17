@@ -15,6 +15,7 @@ pyunqlite is licensed under the [MIT license](http://www.opensource.org/licenses
 ### Building from source
 
 (TODO: Build scripts not using libtool not implemented yet)
+
 Run the following:
 
     ./configure

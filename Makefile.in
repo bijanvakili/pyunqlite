@@ -1,53 +1,9 @@
-CXX=@CXX@
-SWIG=@SWIGBIN@
-
 BUILD_DIR=.build
 
-# TODO Move C++ build steps to a separate Makefile in the CPPSRC_DIR below
-CPPSRC_DIR=src/cpp
-
-CXXFLAGS= -fPIC -I$(CPPSRC_DIR) @CXXFLAGS@ @CPPFLAGS@
-SWIGFLAGS= @CPPFLAGS@ -c++ -builtin -keyword
-LDFLAGS= -fPIC -shared @LDFLAGS@
-LDLIBS= -lunqlite
-
-WRAPPER_LIBRARY=$(BUILD_DIR)/_pyunqliteimp.so
-
-all: wrapper
-
-dirs:
-	mkdir -p $(BUILD_DIR)
-
-clean:
-	$(RM) -r $(BUILD_DIR)
-
-WRAPPER_MODULES=$(BUILD_DIR)/pyunqliteimp_wrap.o \
-	$(BUILD_DIR)/UnqliteDatabaseImp.o \
-	$(BUILD_DIR)/UnqliteCursor.o \
-	$(BUILD_DIR)/UnqliteException.o \
-	$(BUILD_DIR)/ValueBuffer.o
+all: 
+	$(MAKE) -C src/cpp all
 	
-WRAPPER_HEADERS=$(CPPSRC_DIR)/UnqliteCommon.h \
-	$(CPPSRC_DIR)/UnqliteDatabaseImp.h \
-	$(CPPSRC_DIR)/UnqliteCursor.h \
-	$(CPPSRC_DIR)/UnqliteException.h \
-	$(CPPSRC_DIR)/ValueBuffer.h
+clean:
+	$(MAKE) -C src/cpp clean
 
-wrapper: $(WRAPPER_LIBRARY)
-
-$(WRAPPER_LIBRARY): $(WRAPPER_MODULES) 
-	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
-
-$(BUILD_DIR)/%.o: $(CPPSRC_DIR)/%.cpp $(CPPSRC_DIR)/%.h dirs
-	$(CXX) -c $(CXXFLAGS) -o $@ $<
-
-$(BUILD_DIR)/%_wrap.o: $(BUILD_DIR)/%_wrap.cpp
-	$(CXX) -c $(CXXFLAGS) -o $@ $<
-
-$(CPPSRC_DIR)/pyunqlite.i: $(CPPSRC_DIR)/valuebuffer.i 
-
-$(BUILD_DIR)/%_wrap.cpp: $(CPPSRC_DIR)/%.i $(WRAPPER_HEADERS) dirs
-	$(SWIG) $(SWIGFLAGS) -python -o $@ $<
-
-.PHONY: clean wrapper dirs
-.SECONDARY: $(BUILD_DIR)/pyunqliteimp_wrap.cpp
+.PHONY: clean
