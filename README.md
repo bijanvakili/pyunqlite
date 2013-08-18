@@ -14,7 +14,7 @@ pyunqlite is licensed under the [MIT license](http://www.opensource.org/licenses
 
 ### Building from source
 
-(TODO: Build scripts not using libtool not implemented yet)
+*TODO*: Configure scripts need to be modified to reduce explicit libtool invocations
 
 Run the following:
 
@@ -26,11 +26,13 @@ Run the following:
 
 The wrapper and shared library will be found in the '.build' subfolder.
 
+*TODO*: No install target has been created yet
+
 Until an 'install' target is created, you need to setup the following environment variables for the
 shared library and python load paths:
 
-    export LD_LIBRARY_PATH=`pwd`/.build
-    export PYTHONPATH=`pwd`/src/python:`pwd`/.build
+    export LD_LIBRARY_PATH=`pwd`/.build/.libs
+    export PYTHONPATH=`pwd`/src/python:`pwd`/.build:`pwd`/.build/.libs
 
 You can then run the test scripts as follows:
 

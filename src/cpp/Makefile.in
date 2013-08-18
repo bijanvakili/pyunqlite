@@ -3,12 +3,12 @@ SWIG=@SWIGBIN@
 
 BUILD_DIR=../../.build
 
-CXXFLAGS= -fPIC -I. @CXXFLAGS@ @CPPFLAGS@
+CXXFLAGS= -I. @CXXFLAGS@ @CPPFLAGS@
 SWIGFLAGS= @CPPFLAGS@ -c++ -builtin -keyword
-LDFLAGS= -fPIC -shared @LDFLAGS@
+LDFLAGS= @LDFLAGS@
 LDLIBS= -lunqlite
 
-WRAPPER_LIBRARY=$(BUILD_DIR)/_pyunqliteimp.so
+WRAPPER_LIBRARY=$(BUILD_DIR)/_pyunqliteimp.la
 
 all: wrapper
 
@@ -18,11 +18,11 @@ dirs:
 clean:
 	$(RM) -r $(BUILD_DIR)
 
-WRAPPER_MODULES=$(BUILD_DIR)/pyunqliteimp_wrap.o \
-	$(BUILD_DIR)/UnqliteDatabaseImp.o \
-	$(BUILD_DIR)/UnqliteCursor.o \
-	$(BUILD_DIR)/UnqliteException.o \
-	$(BUILD_DIR)/ValueBuffer.o
+WRAPPER_MODULES=$(BUILD_DIR)/pyunqliteimp_wrap.lo \
+	$(BUILD_DIR)/UnqliteDatabaseImp.lo \
+	$(BUILD_DIR)/UnqliteCursor.lo \
+	$(BUILD_DIR)/UnqliteException.lo \
+	$(BUILD_DIR)/ValueBuffer.lo
 	
 WRAPPER_HEADERS=UnqliteCommon.h \
 	UnqliteDatabaseImp.h \
@@ -33,13 +33,13 @@ WRAPPER_HEADERS=UnqliteCommon.h \
 wrapper: $(WRAPPER_LIBRARY)
 
 $(WRAPPER_LIBRARY): $(WRAPPER_MODULES) 
-	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+	libtool --mode=link $(CXX) -shared -module $(LDFLAGS) -rpath @prefix@/lib -o $@ $^ $(LDLIBS)
 
-$(BUILD_DIR)/%.o: %.cpp %.h dirs
-	$(CXX) -c $(CXXFLAGS) -o $@ $<
+$(BUILD_DIR)/%.lo: %.cpp %.h dirs
+	libtool --mode=compile $(CXX) -shared -c $(CXXFLAGS) -o $@ $<
 
-$(BUILD_DIR)/%_wrap.o: $(BUILD_DIR)/%_wrap.cpp
-	$(CXX) -c $(CXXFLAGS) -o $@ $<
+$(BUILD_DIR)/%_wrap.lo: $(BUILD_DIR)/%_wrap.cpp
+	libtool --mode=compile $(CXX) -shared -c $(CXXFLAGS) -o $@ $<
 
 pyunqlite.i: valuebuffer.i 
 
