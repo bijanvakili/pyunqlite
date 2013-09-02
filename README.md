@@ -6,33 +6,35 @@ pyunqlite is licensed under the [MIT license](http://www.opensource.org/licenses
 
 ## Building
 
-### Requirements
+### Runtime Requirements
 
 1. [python](http://www.python.org/) and development headers
-2. [SWIG](http://www.swig.org/)
-3. [unqlite](http://unqlite.org/)
+2. [unqlite](http://unqlite.org/)
+
+### Build Requirements
+
+1. [SWIG](http://www.swig.org/)
+2. [autoconf](http://www.gnu.org/software/autoconf/)
+3. [automake](http://www.gnu.org/software/automake/)
+4. [libtool](http://www.gnu.org/software/libtool/)
 
 ### Building from source
 
-*TODO*: Configure scripts need to be modified to reduce explicit libtool invocations
-
 Run the following:
-
+	
+	libtoolize --force --copy
+	autoreconf --install --force
     ./configure
     make
-
+	make install
 
 ## Execution
 
-The wrapper and shared library will be found in the '.build' subfolder.
+TODO 'pyunqlite.py' and 'pyunqliteimp.py' need to be installed too
 
-*TODO*: No install target has been created yet
+For now, you need to setup the following environment variables to load the python module
 
-Until an 'install' target is created, you need to setup the following environment variables for the
-shared library and python load paths:
-
-    export LD_LIBRARY_PATH=`pwd`/.build/.libs
-    export PYTHONPATH=`pwd`/src/python:`pwd`/.build:`pwd`/.build/.libs
+    export PYTHONPATH=`pwd`/src/cpp:`pwd`/src/python
 
 You can then run the test scripts as follows:
 

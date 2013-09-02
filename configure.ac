@@ -1,8 +1,8 @@
 AC_PREREQ(2.61)
 
 # TODO Retrieve version and email contact from outside this script
-AC_INIT([pyunqlite], [0.01], [bijanvakili@server.make])
 
+AC_INIT([pyunqlite], [0.01], [bijanvakili@server.make])
 AC_ARG_WITH([swig],
 	[AS_HELP_STRING([--with-swig], [specify swig executable (default to PATH)])],
 	[with_swig=$withval],
@@ -10,20 +10,16 @@ AC_ARG_WITH([swig],
 
 AC_MSG_NOTICE([Configuring pyunqlite])
 
+# Initialize automake and libtool
+AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+AC_CONFIG_MACRO_DIR([m4])
+LT_INIT([disable-static])
+
 # Checks for programs
 AC_PROG_GREP
 AC_PROG_CC
-AC_PROG_CXXCPP
+AC_PROG_CPP
 AC_PROG_CXX
-
-
-# TODO Fix to use libtool for shared libraries (ensure -fPIC is included)
-#lib_LTLIBRARIES = _pyunqliteimp.la
-#AC_CONFIG_MACRO_DIR([m4])
-#LT_INIT()
-#AC_DISABLE_STATIC()
-#AC_SUBST([LIBTOOL_DEPS])
-
 
 # Checks for standard header files.
 AC_HEADER_STDC
@@ -58,19 +54,19 @@ fi
 AC_SUBST(SWIGBIN)
 
 # Check for python
-
 AC_CHECK_HEADER([Python.h], [], AC_MSG_ERROR([python development headers not installed.]))
 
 # Check unqlite
-
 AC_CHECK_HEADER([unqlite.h], [], AC_MSG_ERROR([unqlite headers not found.]),
 [[ #ifndef HAVE_UNQLITE_H
 	#include <unqlite.h>
 #endif
 ]])
-
 AC_CHECK_LIB([unqlite], [unqlite_lib_ident], [], AC_MSG_ERROR([unqlite library not found.]), [-lpthread])
 
 # Update files
-AC_CONFIG_FILES([Makefile src/cpp/Makefile])
+AC_CONFIG_FILES([
+	Makefile
+	src/cpp/Makefile
+])
 AC_OUTPUT

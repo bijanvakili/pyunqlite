@@ -1,9 +1,0 @@
-BUILD_DIR=.build
-
-all: 
-	$(MAKE) -C src/cpp all
-	
-clean:
-	$(MAKE) -C src/cpp clean
-
-.PHONY: clean
