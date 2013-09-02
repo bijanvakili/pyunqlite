@@ -74,18 +74,34 @@ UnqliteCursor::seek_end()
 }
 
 ValueBuffer*
-UnqliteCursor::get_key(int key_len)
+UnqliteCursor::get_key(int key_len, pyunqlite::UserCallback* callback)
 {
-	int nBytes = 0;
-	unqlite_kv_cursor_key(this->_cursor, 0, &nBytes);
+	ValueBuffer* value = 0;
+	int rc;
+	if (callback)
+	{
+		rc = unqlite_kv_cursor_key_callback(
+			this->_cursor,
+			callback->get_unqlite_callback_function(),
+			callback->get_unqlite_callback_data()
+		);
+	}
+	else
+	{
+		int nBytes = 0;
+		unqlite_kv_cursor_key(this->_cursor, 0, &nBytes);
 
-	// create the buffer
-	ValueBuffer* value = new ValueBuffer(false, nBytes);
-	if (!value)
-		throw UnqliteException(UNQLITE_NOMEM);
+		// create the buffer
+		value = new ValueBuffer(false, nBytes);
+		if (!value)
+			throw UnqliteException(UNQLITE_NOMEM);
 
-	int rc = unqlite_kv_cursor_key(this->_cursor, value->get_data(), &nBytes);
-	if (rc != UNQLITE_OK)
+		rc = unqlite_kv_cursor_key(this->_cursor, value->get_data(), &nBytes);
+	}
+
+	if (callback && (rc == UNQLITE_ABORT))
+		callback->process_exception();
+	else if (rc != UNQLITE_OK)
 		throw UnqliteException(rc, this->_db);
 
 	return value;
@@ -95,11 +111,13 @@ ValueBuffer*
 UnqliteCursor::get_data(
 	bool as_binary,
 	sxi64 value_len,
+	pyunqlite::UserCallback* callback,
 	pyunqlite::ValueBuffer* direct_buffer
 )
 {
-	// setup the buffer for retrieving data
 	ValueBuffer* value = 0;
+
+	// setup the buffer for retrieving data
 	if (direct_buffer) {
 		if (value_len < 0)
 			value_len = direct_buffer->get_data_len();
@@ -108,7 +126,7 @@ UnqliteCursor::get_data(
 
 		value = new ValueBuffer(*direct_buffer);
 	}
-	else {
+	else if (!callback) {
 		// determine the size of the stored data if it is unknown
 		if (value_len < 0)
 			value_len = get_data_len();
@@ -119,9 +137,21 @@ UnqliteCursor::get_data(
 			throw UnqliteException(UNQLITE_NOMEM);
 	}
 
+	int rc;
+	if (callback) {
+		rc = unqlite_kv_cursor_data_callback(
+			this->_cursor,
+			callback->get_unqlite_callback_function(),
+			callback->get_unqlite_callback_data()
+		);
+	}
+	else {
+		rc = unqlite_kv_cursor_data(this->_cursor, value->get_data(), &value_len);
+	}
 
-	int rc = unqlite_kv_cursor_data(this->_cursor, value->get_data(), &value_len);
-	if (rc != UNQLITE_OK)
+	if (callback && (rc == UNQLITE_ABORT))
+		callback->process_exception();
+	else if (rc != UNQLITE_OK)
 		throw UnqliteException(rc, this->_db);
 
 	return value;

@@ -54,6 +54,16 @@ def main(argv):
             print 'db({0})={1}'.format(entry.key, entry.data)
   
         
+        def test_cursor_key_callback(cb_data, cb_data_len):
+            print '(callback)key={0}'.format(cb_data)
+            return True
+        
+        def test_cursor_data_callback(cb_data, cb_data_len):
+            print '(callback)value={0}'.format(cb_data)
+            return True
+        
+        print 'Restart iteration and use callback functions...'
+        db.kv_iterate_with_callbacks(user_callbacks=(test_cursor_key_callback, test_cursor_data_callback,))
         print 'Finished iteration process'
       
 

@@ -30,6 +30,17 @@ class UnqliteDatabase(pyunqliteimp.UnqliteDatabaseImp):
         while cursor.is_valid():
             yield UnqliteEntry(cursor.get_key(), cursor.get_data())
             cursor.next()
+
+    def kv_iterate_with_callbacks(self, user_callbacks, start=None, match_type=pyunqliteimp.SEEK_MATCH_EXACT):
+        cursor = super(UnqliteDatabase, self).kv_cursor()
+        
+        if start:
+            cursor.seek(key=start, match_type=match_type)
+        
+        while cursor.is_valid():
+            cursor.get_key(callback=user_callbacks[0])
+            cursor.get_data(callback=user_callbacks[1])
+            cursor.next()
         
 class UnqliteEntry:
     def __init__(self, key, data):

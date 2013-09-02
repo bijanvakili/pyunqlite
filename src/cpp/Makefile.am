@@ -29,6 +29,7 @@ _pyunqliteimp_la_SOURCES = \
 	pyunqliteimp_wrap.cpp \
 	$(_pyunqliteimp_la_headers)
 BUILT_SOURCES=pyunqliteimp_wrap.cpp
+CLEANFILES=pyunqliteimp_wrap.cpp
 
 pyunqliteimp.i: valuebuffer.i usercallback.i
 

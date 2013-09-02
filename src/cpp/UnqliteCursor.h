@@ -2,6 +2,7 @@
 #define _UNQLITE_CURSOR_H
 
 #include "UnqliteCommon.h"
+#include "Callback.h"
 #include "ValueBuffer.h"
 
 namespace pyunqlite
@@ -21,12 +22,14 @@ public:
 	UnqliteCursor(unqlite* db);
 	virtual ~UnqliteCursor();
 
-	virtual pyunqlite::ValueBuffer* get_key(int key_len=-1);
-
-	// TODO get_data() with callback
+	virtual pyunqlite::ValueBuffer* get_key(
+		int key_len=-1,
+		pyunqlite::UserCallback* callback=0
+	);
 	virtual pyunqlite::ValueBuffer* get_data(
 		bool as_binary=false,
 		sxi64 value_len=-1,
+		pyunqlite::UserCallback* callback=0,
 		pyunqlite::ValueBuffer* direct_buffer=0
 	);
 	virtual sxi64 get_data_len();
