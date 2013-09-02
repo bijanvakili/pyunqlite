@@ -24,6 +24,7 @@ Run the following:
 	
 	libtoolize --force --copy
 	autoreconf --install --force
+	autoconf configure.ac > configure
     ./configure
     make
 	make install
