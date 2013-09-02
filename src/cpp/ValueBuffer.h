@@ -3,13 +3,6 @@
 
 #include "UnqliteCommon.h"
 
-// forward declarations
-#ifndef Py_OBJECT_H
-extern "C" {
-typedef struct _object PyObject;
-}; // extern "C"
-#endif // Py_OBJECT_H
-
 namespace pyunqlite
 {
 

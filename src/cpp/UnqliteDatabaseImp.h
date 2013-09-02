@@ -4,6 +4,7 @@
 #include "UnqliteCommon.h"
 #include "UnqliteException.h"
 #include "UnqliteCursor.h"
+#include "Callback.h"
 #include "ValueBuffer.h"
 
 namespace pyunqlite
@@ -36,12 +37,12 @@ public:
 	);
 
 	// returns the data
-	// TODO kv_fetch() with callback
     virtual pyunqlite::ValueBuffer* kv_fetch(
     	const char* key,
     	bool as_binary=false,
     	int key_len=-1,
     	sxi64 value_len=-1,
+    	pyunqlite::UserCallback* callback=0,
     	pyunqlite::ValueBuffer* direct_buffer=0
     );
 

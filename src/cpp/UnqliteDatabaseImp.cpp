@@ -100,12 +100,18 @@ UnqliteDatabaseImp::kv_fetch(
 	bool as_binary,
 	int key_len,
 	sxi64 value_len,
+	pyunqlite::UserCallback* callback,
 	pyunqlite::ValueBuffer* direct_buffer
 )
 {
 	// setup the buffer for retrieving data
 	ValueBuffer* value = 0;
 	if (direct_buffer) {
+
+		// disallow a direct buffer if a callback was specified
+		if (callback)
+			throw UnqliteException(UNQLITE_INVALID);
+
 		if (value_len < 0)
 			value_len = direct_buffer->get_data_len();
 		else if (direct_buffer->get_data_len() < value_len)
@@ -113,7 +119,7 @@ UnqliteDatabaseImp::kv_fetch(
 
 		value = new ValueBuffer(*direct_buffer);
 	}
-	else {
+	else if (!callback) {
 		// determine the size of the stored data if it is unknown
 		if (value_len < 0)
 			value_len = kv_fetch_len(key, key_len);
@@ -122,12 +128,28 @@ UnqliteDatabaseImp::kv_fetch(
 		value = new ValueBuffer(as_binary, value_len);
 	}
 
-	if (!value)
-		throw UnqliteException(UNQLITE_NOMEM);
-
 	// retrieve the data
-	int rc = unqlite_kv_fetch(this->_db, key, key_len, value->get_data(), &value_len);
-	if (rc != UNQLITE_OK)
+	int rc;
+	if (callback) {
+		callback->set_as_binary(as_binary);
+		rc = unqlite_kv_fetch_callback(
+			this->_db,
+			key,
+			key_len,
+			callback->get_unqlite_callback_function(),
+			callback->get_unqlite_callback_data()
+		);
+	}
+	else {
+		if (!value)
+			throw UnqliteException(UNQLITE_NOMEM);
+
+		rc = unqlite_kv_fetch(this->_db, key, key_len, value->get_data(), &value_len);
+	}
+
+	if (callback && (rc == UNQLITE_ABORT))
+		callback->process_exception();
+	else if (rc != UNQLITE_OK)
 		throw UnqliteException(rc, this->_db);
 
 	return value;

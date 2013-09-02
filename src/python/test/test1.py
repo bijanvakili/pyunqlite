@@ -30,7 +30,15 @@ def main(argv):
         # retrieve a record
         data = db.kv_fetch('test')
         data_len = db.kv_fetch_len('test')
-        print 'test = "{0}" with length={1}'.format(data, data_len) 
+        print 'test = "{0}" with length={1}'.format(data, data_len)
+        
+        # retrieve a record using a callback
+        def test_fetch_callback(cb_data, cb_data_len):
+            print '(callback)test = "{0}" with length={1}'.format(
+                cb_data, cb_data_len)
+            return True
+            
+        db.kv_fetch('test', callback=test_fetch_callback)
         
         # delete a record
         db.kv_delete('test')

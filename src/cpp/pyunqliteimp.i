@@ -18,6 +18,7 @@ extern "C" {
 	#include "unqlite.h"
 };
 #include "UnqliteException.h"
+#include "PythonException.h"
 #include "UnqliteCursor.h"
 #include "UnqliteDatabaseImp.h"
 #include "ValueBuffer.h"
@@ -53,6 +54,10 @@ pyunqliteimp_Shutdown()
   try {
     $action
   } 
+  catch (pyunqlite::PythonException& e) {
+  	e.restore();
+  	return 0;
+  }
   catch (const pyunqlite::UnqliteException& e) {
     PyErr_SetString(g_pUnqliteExceptionClass, const_cast<char*>(e.what()));
     return 0;
@@ -76,6 +81,7 @@ pyunqliteimp_Shutdown()
 }
 
 %include "valuebuffer.i"
+%include "usercallback.i"
 
 /* Headers to parse to generate wrappers */
 %include "UnqliteCursor.h"

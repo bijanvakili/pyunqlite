@@ -42,6 +42,16 @@ def main(argv):
         barr2 = bytearray.fromhex("ef ef ef")
         db.kv_fetch(key='test_bin', as_binary=True, value_len=3, direct_buffer=barr2)
         print 'barr2 =(' + ''.join( ['%02x ' % x for x in barr2] ).strip() + ')'
+        
+        # load an array using a callback function
+        def test_fetch_callback(cb_data, cb_data_len):
+            print '(callback)test = "{0}" with length={1}'.format(
+                ''.join( ['%02x ' % x for x in cb_data] ).strip(),
+                cb_data_len)
+            return True
+            
+        db.kv_fetch(key='test_bin', as_binary=True, callback=test_fetch_callback)
+        
 
 # Main program
 if __name__ == "__main__":

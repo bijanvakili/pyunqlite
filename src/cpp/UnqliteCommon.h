@@ -19,4 +19,12 @@ typedef unsigned long long int sxu64; /* 64 bits(8 bytes) unsigned int64 */
 
 #endif // _UNQLITE_H_
 
+// forward declarations
+#ifndef Py_OBJECT_H
+extern "C" {
+typedef struct _object PyObject;
+}; // extern "C"
+#endif // Py_OBJECT_H
+
+
 #endif // _UNQLITE_COMMON_H

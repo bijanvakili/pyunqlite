@@ -29,7 +29,11 @@
 
 
 %typemap(out) pyunqlite::ValueBuffer* {
-	$result = $1->get_python_object();
-	
-	delete $1;
+	if ($1) {
+		$result = $1->get_python_object();
+		delete $1;
+	}
+	else {
+		$result = SWIG_Py_Void();
+	}
 }
