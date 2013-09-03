@@ -5,7 +5,7 @@ SWIGFLAGS= @CPPFLAGS@ -c++ -builtin -keyword
 pkgconfigdir = $(libdir)/pkgconfig
 
 lib_LTLIBRARIES = _pyunqliteimp.la
-_pyunqliteimp_la_LDFLAGS = -module
+_pyunqliteimp_la_LDFLAGS = -module -version-info @PYUNQLITE_VERSION@
 
 _pyunqliteimp_la_CXXFLAGS= -I. @CXXFLAGS@ @CPPFLAGS@
 _pyunqliteimp_la_LDLIBS= -lunqlite

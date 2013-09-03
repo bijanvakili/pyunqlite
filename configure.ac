@@ -1,14 +1,16 @@
 AC_PREREQ(2.61)
 
 # TODO Retrieve version and email contact from outside this script
-
-AC_INIT([pyunqlite], [0.01], [bijanvakili@server.make])
+AC_INIT([pyunqlite], [0.0.1], [bijanvakili@server.make])
 AC_ARG_WITH([swig],
 	[AS_HELP_STRING([--with-swig], [specify swig executable (default to PATH)])],
 	[with_swig=$withval],
 	[with_swig=swig])
 
 AC_MSG_NOTICE([Configuring pyunqlite])
+
+PYUNQLITE_VERSION="0:1:0"
+AC_SUBST(PYUNQLITE_VERSION)
 
 # Initialize automake and libtool
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
