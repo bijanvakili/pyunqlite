@@ -28,6 +28,12 @@ public:
 	virtual void close();
 	virtual bool is_open() const;
 
+	virtual void set_db_options(
+		int max_cache_pages = 0,
+		bool auto_commit = true
+	);
+	virtual std::string get_kv_engine() const;
+
 	virtual void kv_store(
 		const char* key,
 		const pyunqlite::ValueBuffer& value,
@@ -58,6 +64,10 @@ public:
     );
 
     virtual UnqliteCursor* kv_cursor();
+
+    virtual void start_transaction();
+    virtual void rollback();
+    virtual void commit();
 
     virtual unsigned int util_random_int();
     virtual std::string util_random_string(unsigned int len);

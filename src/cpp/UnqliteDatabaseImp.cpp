@@ -71,6 +71,38 @@ UnqliteDatabaseImp::is_open() const
 }
 
 void
+UnqliteDatabaseImp::set_db_options(
+	int max_cache_pages,
+	bool auto_commit
+)
+{
+	int rc;
+	if (max_cache_pages > 0 ) {
+		rc = unqlite_config(this->_db, UNQLITE_CONFIG_MAX_PAGE_CACHE, max_cache_pages);
+		if ( rc != 0 )
+			throw UnqliteException(rc, this->_db);
+	}
+	if ( !auto_commit ) {
+		rc = unqlite_config(this->_db, UNQLITE_CONFIG_DISABLE_AUTO_COMMIT);
+		if ( rc != 0 )
+			throw UnqliteException(rc, this->_db);
+	}
+}
+
+
+std::string
+UnqliteDatabaseImp::get_kv_engine() const
+{
+	char* pzName = 0;
+	int rc = unqlite_config(this->_db, UNQLITE_CONFIG_GET_KV_NAME, &pzName);
+	if ( rc != 0 )
+		throw UnqliteException(rc, this->_db);
+
+	return std::string(pzName);
+}
+
+
+void
 UnqliteDatabaseImp::kv_store(
 	const char* key,
 	const ValueBuffer& value,
@@ -186,6 +218,34 @@ UnqliteDatabaseImp::kv_cursor()
 {
 	return new UnqliteCursor(this->_db);
 }
+
+
+void
+UnqliteDatabaseImp::start_transaction()
+{
+	int rc = unqlite_begin(this->_db);
+	if (rc != UNQLITE_OK)
+		throw UnqliteException(rc, this->_db);
+}
+
+
+void
+UnqliteDatabaseImp::rollback()
+{
+	int rc = unqlite_rollback(this->_db);
+	if (rc != UNQLITE_OK)
+		throw UnqliteException(rc, this->_db);
+}
+
+
+void
+UnqliteDatabaseImp::commit()
+{
+	int rc = unqlite_commit(this->_db);
+	if (rc != UNQLITE_OK)
+		throw UnqliteException(rc, this->_db);
+}
+
 
 unsigned int
 UnqliteDatabaseImp::util_random_int()
