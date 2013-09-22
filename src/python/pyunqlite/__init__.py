@@ -1,11 +1,10 @@
-import pyunqliteimp
 import _pyunqliteimp
 
 # thin wrapper for exception
 UnqliteException = _pyunqliteimp.UnqliteException
 
 
-class UnqliteDatabase(pyunqliteimp.UnqliteDatabaseImp):
+class UnqliteDatabase(_pyunqliteimp.UnqliteDatabaseImp):
     
     """
     context managers ('with' statement)
@@ -21,7 +20,7 @@ class UnqliteDatabase(pyunqliteimp.UnqliteDatabaseImp):
     """
     iteration
     """
-    def kv_cursor(self, start=None, match_type=pyunqliteimp.SEEK_MATCH_EXACT):
+    def kv_cursor(self, start=None, match_type=_pyunqliteimp.SEEK_MATCH_EXACT):
         cursor = super(UnqliteDatabase, self).kv_cursor()
         
         if start:
@@ -31,7 +30,7 @@ class UnqliteDatabase(pyunqliteimp.UnqliteDatabaseImp):
             yield UnqliteEntry(cursor.get_key(), cursor.get_data())
             cursor.next()
 
-    def kv_iterate_with_callbacks(self, user_callbacks, start=None, match_type=pyunqliteimp.SEEK_MATCH_EXACT):
+    def kv_iterate_with_callbacks(self, user_callbacks, start=None, match_type=_pyunqliteimp.SEEK_MATCH_EXACT):
         cursor = super(UnqliteDatabase, self).kv_cursor()
         
         if start:

@@ -64,10 +64,6 @@ pyunqliteimp_Shutdown()
   }
 }
 
-%pythoncode %{
-	UnqliteException = _pyunqliteimp.UnqliteException
-%}
-
 %newobject pyunqlite::UnqliteDatabaseImp::kv_cursor;
 %feature("ref")   pyunqlite::UnqliteCursor ""
 %feature("unref") pyunqlite::UnqliteCursor "delete $this;"

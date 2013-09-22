@@ -14,24 +14,15 @@ pyunqlite is licensed under the [MIT license](http://www.opensource.org/licenses
 ### Build Requirements
 
 1. [SWIG](http://www.swig.org/)
-2. [autoconf](http://www.gnu.org/software/autoconf/)
-3. [automake](http://www.gnu.org/software/automake/)
-4. [libtool](http://www.gnu.org/software/libtool/)
+2. [setuptools](http://pythonhosted.org/setuptools/)
 
 ### Building from source
 
-Run the following:
-	
-	libtoolize --force --copy
-	autoreconf --install --force
-	autoconf configure.ac > configure
-    ./configure
-    make
-	make install
+	python setup.py build
 
 ## Execution
 
-TODO 'pyunqlite.py' and 'pyunqliteimp.py' need to be installed too
+	python setup.py install
 
 For now, you need to setup the following environment variables to load the python module
 
@@ -39,8 +30,8 @@ For now, you need to setup the following environment variables to load the pytho
 
 You can then run the test scripts as follows:
 
-    cd src/python
-    python test/test1.py
+    cd src/python/examples
+    python test/kv_intro.py
     . . .
 
 ## Testing Notes
