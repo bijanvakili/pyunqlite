@@ -9,7 +9,7 @@ pyunqlite is licensed under the [MIT license](http://www.opensource.org/licenses
 ### Runtime Requirements
 
 1. [python](http://www.python.org/) and development headers
-2. [unqlite](http://unqlite.org/)
+2. [unqlite](http://unqlite.org/) as a static or shared library
 
 ### Build Requirements
 
@@ -18,21 +18,21 @@ pyunqlite is licensed under the [MIT license](http://www.opensource.org/licenses
 
 ### Building from source
 
+To build from source, run the following command:
+
 	python setup.py build
 
-## Execution
+## Installation
 
 	python setup.py install
 
-For now, you need to setup the following environment variables to load the python module
+## Samples
 
-    export PYTHONPATH=`pwd`/src/cpp:`pwd`/src/python
-
-You can then run the test scripts as follows:
+After installation, you can run the test scripts as follows:
 
     cd src/python/examples
     python test/kv_intro.py
-    . . .
+    (etc ...)
 
 ## Testing Notes
 
