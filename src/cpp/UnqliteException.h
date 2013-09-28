@@ -20,7 +20,11 @@ public:
 protected:
 	std::string _error_text;
 
-	virtual void AppendLogError(unqlite* pDB = 0);
+	virtual void
+	AppendLogError(
+		unqlite* pDB = 0,
+		bool compiler_log = false
+	);
 
 private:
 	UnqliteException();

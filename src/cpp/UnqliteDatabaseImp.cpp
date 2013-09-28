@@ -4,6 +4,7 @@ extern "C" {
 };
 
 #include "UnqliteDatabaseImp.h"
+#include "UnqliteCursor.h"
 
 namespace pyunqlite
 {
@@ -263,5 +264,34 @@ UnqliteDatabaseImp::util_random_string(unsigned int len)
 
 	return str;
 }
+
+UnqliteVirtualMachine*
+UnqliteDatabaseImp::vm_compile(
+	const char* filename,
+	const char* jx9_content,
+	int jx9_content_len
+)
+{
+	unqlite_vm* vm = 0;
+	int rc;
+	if (jx9_content)
+	{
+		rc = unqlite_compile(this->_db, jx9_content, jx9_content_len, &vm);
+	}
+	else if (filename)
+	{
+		rc = unqlite_compile_file(this->_db, filename, &vm);
+	}
+	else
+	{
+		throw UnqliteException(UNQLITE_INVALID, this->_db);
+	}
+
+	if (rc != UNQLITE_OK)
+		throw UnqliteException(rc, this->_db);
+
+	return new UnqliteVirtualMachine(this->_db, vm);
+}
+
 
 } // namespace pyunqlite

@@ -20,6 +20,7 @@ extern "C" {
 #include "UnqliteException.h"
 #include "PythonException.h"
 #include "UnqliteCursor.h"
+#include "UnqliteVirtualMachine.h"
 #include "UnqliteDatabaseImp.h"
 #include "ValueBuffer.h"
 
@@ -68,6 +69,10 @@ pyunqliteimp_Shutdown()
 %feature("ref")   pyunqlite::UnqliteCursor ""
 %feature("unref") pyunqlite::UnqliteCursor "delete $this;"
 
+%newobject pyunqlite::UnqliteDatabaseImp::vm_compile;
+%feature("ref")   pyunqlite::UnqliteVirtualMachine ""
+%feature("unref") pyunqlite::UnqliteVirtualMachine "delete $this;"
+
 %typemap(in) sxi64 {
 	$1 = PyLong_AsLongLong($input);
 }
@@ -81,4 +86,5 @@ pyunqliteimp_Shutdown()
 
 /* Headers to parse to generate wrappers */
 %include "UnqliteCursor.h"
+%include "UnqliteVirtualMachine.h"
 %include "UnqliteDatabaseImp.h"

@@ -3,13 +3,15 @@
 
 #include "UnqliteCommon.h"
 #include "UnqliteException.h"
-#include "UnqliteCursor.h"
 #include "Callback.h"
+#include "UnqliteVirtualMachine.h"
 #include "ValueBuffer.h"
 
 namespace pyunqlite
 {
 
+class UnqliteCursor;
+class UnqliteVirtualMachine;
 
 // main database class
 class UnqliteDatabaseImp
@@ -71,6 +73,13 @@ public:
 
     virtual unsigned int util_random_int();
     virtual std::string util_random_string(unsigned int len);
+
+    virtual UnqliteVirtualMachine*
+    vm_compile(
+        const char* filename = 0,
+    	const char* jx9_content = 0,
+    	int jx9_content_len = -1
+    );
 
 protected:
     unqlite* _db;

@@ -48,6 +48,7 @@ public:
 	virtual void remove();
 
 protected:
+	// TODO mark _db as a 'weak' reference
 	unqlite* _db;
 	unqlite_kv_cursor* _cursor;
 

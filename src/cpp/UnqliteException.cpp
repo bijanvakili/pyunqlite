@@ -12,6 +12,8 @@ UnqliteException::UnqliteException()
 
 UnqliteException::UnqliteException(int error_code, unqlite* pDB)
 {
+	bool check_compiler_log = false;
+
 	switch(error_code) {
 	case UNQLITE_NOMEM:
 		this->_error_text = "Out of memory";
@@ -65,6 +67,7 @@ UnqliteException::UnqliteException(int error_code, unqlite* pDB)
 		this->_error_text = "Empty record";
 		break;
 	case UNQLITE_COMPILE_ERR:
+		check_compiler_log = true;
 		this->_error_text = "Compilation error";
 		break;
 	case UNQLITE_VM_ERR:
@@ -87,7 +90,7 @@ UnqliteException::UnqliteException(int error_code, unqlite* pDB)
 		break;
 	}
 
-	AppendLogError(pDB);
+	AppendLogError(pDB, check_compiler_log);
 }
 
 UnqliteException::UnqliteException(const std::string& error_text, unqlite* pDB)
@@ -107,13 +110,15 @@ UnqliteException::what() const throw()
 }
 
 void
-UnqliteException::AppendLogError(unqlite* pDB)
+UnqliteException::AppendLogError(unqlite* pDB, bool compiler_log)
 {
 	if (pDB)
 	{
 		int error_text_len = 0;
-		int rc = unqlite_config(pDB, UNQLITE_CONFIG_ERR_LOG, 0, &error_text_len);
-		if (rc == UNQLITE_OK)
+		int nOp = compiler_log ? UNQLITE_CONFIG_JX9_ERR_LOG : UNQLITE_CONFIG_ERR_LOG;
+
+		int rc = unqlite_config(pDB, nOp, 0, &error_text_len);
+		if ( rc == UNQLITE_OK && error_text_len > 0 )
 		{
 			std::string log_message(error_text_len + 1, '\0');
 
@@ -126,6 +131,5 @@ UnqliteException::AppendLogError(unqlite* pDB)
 		}
 	}
 }
-
 
 } // namespace pyunqlite

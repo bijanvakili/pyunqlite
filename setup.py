@@ -15,7 +15,7 @@ setup(
     long_description='A python client library for the unqlite embedded NoSQL database',
     keywords=['UnQLite'],
     author='Bijan Vakili',
-    author_email='bijanvakili@server.fake',
+    author_email='bijvak2@gmail.com',
     url='https://github.com/bijanvakili/pyunqlite',
     package_dir = { '' : 'src/python', },
     packages = ['pyunqlite'],
