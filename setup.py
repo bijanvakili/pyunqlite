@@ -24,7 +24,6 @@ def main():
         package_dir = { '' : 'src/python', },
         packages = ['pyunqlite'],
         license='MIT License',
-        platforms=['unix'],
         
         # details to be filled in by subcommands
         libraries=[('unqlite', { })],

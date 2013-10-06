@@ -25,7 +25,9 @@ TODO This project does not yet support python 3.x
 pyunqlite can link to the unqlite library (libunqlite) in 3 ways:
 
 1. Specify web URL 'unqlite-download-url' to download and build as a static library (default)
-2. Specify 'unqlite-version' and optionaly 'unqlite-release-date'.  You can also drop the unqlite .zip archive into ```<build-temp>/unqlite_source```
+2. Specify 'unqlite-version' and optionaly 'unqlite-release-date'.  
+   You can also drop in an unqlite .zip archive directly.  
+   (e.g. if ```--build-base``` is ```build```, extract the archive into ```build/unqlite_source```)
 3. Don't set anything.  pyunqlite will instead search for a pre-built 'libunqlite' static or shared library using standard include and linker paths.
 
 Edit 'setup.cfg' if you wish to customize integration with unqlite based on the options above.
@@ -54,5 +56,6 @@ After installation, you can run the test scripts as follows:
 
 The project has been tested on the following platforms:
 
-* Ubuntu Linux v12.04 LTS 64-bit
-* Mac OS X Mountain Lion 10.8
+* Ubuntu Linux v12.04 LTS 64-bit with GNU gcc
+* Mac OS X Mountain Lion 10.8 with LLVM clang
+* Microsoft Windows 7 64-bit with Visual Studio 2012

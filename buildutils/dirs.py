@@ -9,4 +9,8 @@ class DirectoriesMixin:
     _CPP_SOURCE_DIR=os.path.join('src', 'cpp')
 
     def _get_unqlite_build_dir(self):
-        return os.path.join(self.build_temp, self._UNQLITE_SOURCE_SUBDIR)
+        if not hasattr(self, 'build_base') or not self.build_base:
+            self.build_base = None
+            self.set_undefined_options('build', 
+                                       ('build_base', 'build_base'))
+        return os.path.join(self.build_base, self._UNQLITE_SOURCE_SUBDIR)
