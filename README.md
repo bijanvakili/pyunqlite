@@ -8,21 +8,37 @@ pyunqlite is licensed under the [MIT license](http://www.opensource.org/licenses
 
 ### Runtime Requirements
 
-1. [python](http://www.python.org/) and development headers
-2. [unqlite](http://unqlite.org/) as a static or shared library
+1. [python](http://www.python.org/) 2.7.x
+2. [unqlite](http://unqlite.org/) 1.1.6
+
+TODO This project does not yet support python 3.x
 
 ### Build Requirements
 
-1. [SWIG](http://www.swig.org/)
-2. [setuptools](http://pythonhosted.org/setuptools/)
+1. [python](http://www.python.org/) and development headers
+2. [unqlite](http://unqlite.org/) and development headers
+3. [SWIG](http://www.swig.org/)
+4. [setuptools](http://pythonhosted.org/setuptools/)
 
 ### Building from source
 
-To build from source, run the following command:
+pyunqlite can link to the unqlite library (libunqlite) in 3 ways:
+
+1. Specify web URL 'unqlite-download-url' to download and build as a static library (default)
+2. Specify 'unqlite-version' and optionaly 'unqlite-release-date'.  You can also drop the unqlite .zip archive into ```<build-temp>/unqlite_source```
+3. Don't set anything.  pyunqlite will instead search for a pre-built 'libunqlite' static or shared library using standard include and linker paths.
+
+Edit 'setup.cfg' if you wish to customize integration with unqlite based on the options above.
+You can also override these options at runtime (see ```python setup.py --help build``` for details) 
+
+To build, run the following command:
 
 	python setup.py build
 
+
 ## Installation
+
+To install, run the following command:
 
 	python setup.py install
 
@@ -36,4 +52,7 @@ After installation, you can run the test scripts as follows:
 
 ## Testing Notes
 
-Development and testing has so far taken place only on Ubuntu Linux v12.04 LTS
+The project has been tested on the following platforms:
+
+* Ubuntu Linux v12.04 LTS 64-bit
+* Mac OS X Mountain Lion 10.8

@@ -34,14 +34,14 @@ ValueBuffer::ValueBuffer(bool is_binary, sxi64 data_len)
 	this->_is_binary = is_binary;
 
 	if (is_binary) {
-		this->_object = PyByteArray_FromStringAndSize(0, data_len);
+		this->_object = PyByteArray_FromStringAndSize(0, (Py_ssize_t)data_len);
 		if (!this->_object)
 			throw UnqliteException(UNQLITE_NOMEM);
 
 		this->_data = PyByteArray_AsString(this->_object);
 	}
 	else {
-		this->_object = PyString_FromStringAndSize(0, data_len);
+		this->_object = PyString_FromStringAndSize(0, (Py_ssize_t)data_len);
 		if (!this->_object)
 			throw UnqliteException(UNQLITE_NOMEM);
 
