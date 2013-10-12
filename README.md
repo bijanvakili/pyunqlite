@@ -1,6 +1,6 @@
 # pyunqlite
 
-A python client library for the unqlite embedded NoSQL database
+A python client library for the UnQLite embedded NoSQL database
 
 pyunqlite is licensed under the [MIT license](http://www.opensource.org/licenses/mit-license.php)
 

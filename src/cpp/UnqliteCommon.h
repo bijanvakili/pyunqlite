@@ -26,5 +26,13 @@ typedef struct _object PyObject;
 }; // extern "C"
 #endif // Py_OBJECT_H
 
+// disable DOCSTRING macro if it wasn't defined by a SWIG interface
+#ifndef DOCSTRING
+	#define DOCSTRING(node, description)
+#endif // DOCSTRING
+
+#ifndef DOCSTRING_ARG
+	#define DOCSTRING_ARG(type, description)
+#endif // DOCSTRING
 
 #endif // _UNQLITE_COMMON_H

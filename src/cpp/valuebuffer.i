@@ -15,6 +15,8 @@
 	delete $1;
 }
 
+%typemap("doc") const pyunqlite::ValueBuffer& value "$1_name: Data value"
+
 %typemap(in) pyunqlite::ValueBuffer* direct_buffer {
 	$1 = new pyunqlite::ValueBuffer($input);  
 	if (!$1) {
@@ -37,3 +39,5 @@
 		$result = SWIG_Py_Void();
 	}
 }
+
+%typemap("doc") pyunqlite::ValueBuffer* direct_buffer "$1_name: Optional buffer to directly store data"

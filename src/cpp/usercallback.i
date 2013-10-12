@@ -13,3 +13,5 @@
 %typemap(freearg) pyunqlite::UserCallback* callback {
 	delete $1;
 }
+
+%typemap("doc") pyunqlite::UserCallback* callback "$1_name: Optional data consumer callback with arguments (data, data_length)"

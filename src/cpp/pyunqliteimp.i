@@ -3,12 +3,11 @@
  */
 
 #ifdef SWIGPYTHON 
-%module pyunqliteimp
+%module (docstring="Client library for the UnQLite") pyunqliteimp
 #endif
 
 %header %{
 
-#define SWIG
 #define SWIG_FILE_WITH_INIT
 
 /* Internal headers for wrapper */
@@ -64,6 +63,17 @@ pyunqliteimp_Shutdown()
     return 0;
   }
 }
+
+/* python docstr generators */
+%feature("autodoc", "2");
+%define DOCSTRING(node, description)
+	%feature("docstring", description) node;
+%enddef
+
+%define DOCSTRING_ARG(type, description)
+	%typemap("doc") type "$1_name: "description
+%enddef
+
 
 %newobject pyunqlite::UnqliteDatabaseImp::kv_cursor;
 %feature("ref")   pyunqlite::UnqliteCursor ""
