@@ -202,6 +202,26 @@ UnqliteDatabaseImp::kv_fetch_len(
 	return data_len;
 }
 
+// determines if a key exists in the table
+bool
+UnqliteDatabaseImp::kv_exists(
+	const char* key,
+	int key_len
+)
+{
+	unqlite_int64 data_len = 0;
+	int rc = unqlite_kv_fetch(this->_db, key, key_len, 0, &data_len);
+	switch (rc)
+	{
+	case UNQLITE_OK:
+		return true;
+	case UNQLITE_NOTFOUND:
+		return false;
+	default:
+		throw UnqliteException(rc, this->_db);
+	}
+}
+
 
 void
 UnqliteDatabaseImp::kv_delete(

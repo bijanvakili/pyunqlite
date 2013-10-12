@@ -3,12 +3,11 @@
  */
 
 #ifdef SWIGPYTHON 
-%module pyunqliteimp
+%module (docstring="Client library for the UnQLite") pyunqliteimp
 #endif
 
 %header %{
 
-#define SWIG
 #define SWIG_FILE_WITH_INIT
 
 /* Internal headers for wrapper */
@@ -64,6 +63,21 @@ pyunqliteimp_Shutdown()
     return 0;
   }
 }
+
+/* python docstr generators */
+%feature("autodoc", "2");
+%define DOCSTRING(node, description)
+	%feature("docstring", description) node;
+%enddef
+
+%define DOCSTRING_ARG(ctype, description)
+	%typemap("doc") ctype "$1_name: "description".\n"
+
+// TODO Ideally we can generate these lines instead for sphinx formatting
+/*	%typemap("doc") ctype ":param $1_name: "description"."*/
+/*   	%typemap("doc") ctype ":type $1_name: "#ctype"."*/
+%enddef
+
 
 %newobject pyunqlite::UnqliteDatabaseImp::kv_cursor;
 %feature("ref")   pyunqlite::UnqliteCursor ""

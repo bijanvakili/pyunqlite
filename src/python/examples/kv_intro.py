@@ -10,7 +10,7 @@ def main(argv):
         
     with UnqliteDatabase(**kargs) as db: 
         # store some records
-        db.kv_store('test', 'Hello')
+        db['test'] = 'Hello'
         db.kv_store('date', 'dummy date: {0}:{1}:{2}'.format(2013, 06, 07))
         
         # append some values
@@ -25,10 +25,10 @@ def main(argv):
             key = db.util_random_string(len=11)
             if i == 10:
                 halfway_key = key
-            db.kv_store(key, data)
+            db[key] = data
 
         # retrieve a record
-        data = db.kv_fetch('test')
+        data = db['test']
         data_len = db.kv_fetch_len('test')
         print 'test = "{0}" with length={1}'.format(data, data_len)
         
@@ -40,18 +40,29 @@ def main(argv):
             
         db.kv_fetch('test', callback=test_fetch_callback)
         
+        # test for a record
+        print "'test' is in database" if 'test' in db else "'test' does not exist"
+        
         # delete a record
-        db.kv_delete('test')
+        del db['test']
         
         print 'Done inserts.'
         print 'Starting the iteration process...'
         
-        for entry in db.kv_cursor():
-            print 'db({0})={1}'.format(entry.key, entry.data)
+        print 'Outputting only keys in forward order...'
+        for k in db:
+            print k
+        
+        print 'Outputting only keys in reverse order...'
+        for k in reversed(db):
+            print k
+
+        for k,v in db.iteritems():
+            print 'db({0})={1}'.format(k, v)
             
         print 'Restart iteration at selected key: ' + halfway_key
-        for entry in db.kv_cursor(start=halfway_key):
-            print 'db({0})={1}'.format(entry.key, entry.data)
+        for k,v in db.iteritems(start=halfway_key):
+            print 'db({0})={1}'.format(k, v)
   
         
         def test_cursor_key_callback(cb_data, cb_data_len):
@@ -63,7 +74,8 @@ def main(argv):
             return True
         
         print 'Restart iteration and use callback functions...'
-        db.kv_iterate_with_callbacks(user_callbacks=(test_cursor_key_callback, test_cursor_data_callback,))
+        db.iterate_with_callbacks(keys_callback=test_cursor_key_callback, 
+                                  values_callback=test_cursor_data_callback)
         print 'Finished iteration process'
       
 
