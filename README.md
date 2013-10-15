@@ -20,6 +20,9 @@ TODO This project does not yet support python 3.x
 3. [SWIG](http://www.swig.org/)
 4. [setuptools](http://pythonhosted.org/setuptools/)
 
+Optional requirements include:
+* [sphinx](http://sphinx-doc.org/) for generating HTML documentation
+
 ### Building from source
 
 pyunqlite can link to the unqlite library (libunqlite) in 3 ways:
@@ -43,6 +46,14 @@ To build, run the following command:
 To install, run the following command:
 
 	python setup.py install
+
+## Documentation
+
+If you have [sphinx](http://sphinx-doc.org/) installed, you can build the pyunqlite documentation with the following command:
+
+	python setup.py build_sphinx
+
+By default, the documentation will be generated under ```build/sphinx/html```.  Use the ```--build-dir``` option to specify a different path.
 
 ## Samples
 
