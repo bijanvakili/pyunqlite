@@ -11,8 +11,8 @@ namespace pyunqlite
 // search type
 enum SeekMatchType {
 	SEEK_MATCH_EXACT = 0,
-	SEEK_MATCH_LESS_THAN = -1,
-	SEEK_MATCH_GREATER_THAN = 1
+	SEEK_MATCH_LE = -1,
+	SEEK_MATCH_GE = 1
 };
 
 // key-value cursor
@@ -21,6 +21,7 @@ class UnqliteCursor
 public:
 	UnqliteCursor(unqlite* db);
 	virtual ~UnqliteCursor();
+	virtual void close();
 
 	virtual pyunqlite::ValueBuffer* get_key(
 		int key_len=-1,

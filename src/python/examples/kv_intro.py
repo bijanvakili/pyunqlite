@@ -40,18 +40,29 @@ def main(argv):
             
         db.kv_fetch('test', callback=test_fetch_callback)
         
+        # test for a record
+        print "'test' is in database" if 'test' in db else "'test' does not exist"
+        
         # delete a record
         del db['test']
         
         print 'Done inserts.'
         print 'Starting the iteration process...'
         
-        for entry in db.kv_cursor():
-            print 'db({0})={1}'.format(entry.key, entry.data)
+        print 'Outputting only keys in forward order...'
+        for k in db:
+            print k
+        
+        print 'Outputting only keys in reverse order...'
+        for k in reversed(db):
+            print k
+
+        for k,v in db.iteritems():
+            print 'db({0})={1}'.format(k, v)
             
         print 'Restart iteration at selected key: ' + halfway_key
-        for entry in db.kv_cursor(start=halfway_key):
-            print 'db({0})={1}'.format(entry.key, entry.data)
+        for k,v in db.iteritems(start=halfway_key):
+            print 'db({0})={1}'.format(k, v)
   
         
         def test_cursor_key_callback(cb_data, cb_data_len):
@@ -63,7 +74,8 @@ def main(argv):
             return True
         
         print 'Restart iteration and use callback functions...'
-        db.kv_iterate_with_callbacks(user_callbacks=(test_cursor_key_callback, test_cursor_data_callback,))
+        db.iterate_with_callbacks(keys_callback=test_cursor_key_callback, 
+                                  values_callback=test_cursor_data_callback)
         print 'Finished iteration process'
       
 
