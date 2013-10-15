@@ -23,9 +23,21 @@ UnqliteCursor::UnqliteCursor(unqlite* db)
 
 UnqliteCursor::~UnqliteCursor()
 {
-	int rc = unqlite_kv_cursor_release(this->_db, this->_cursor);
-	if (rc != UNQLITE_OK)
-		throw UnqliteException(rc, this->_db);
+	close();
+}
+
+void
+UnqliteCursor::close()
+{
+	if (this->_cursor)
+	{
+		int rc = unqlite_kv_cursor_release(this->_db, this->_cursor);
+		if (rc != UNQLITE_OK)
+			throw UnqliteException(rc, this->_db);
+
+		this->_cursor = 0;
+		this->_db = 0;
+	}
 }
 
 void
@@ -41,10 +53,10 @@ UnqliteCursor::seek(
 	case SEEK_MATCH_EXACT:
 		iPos = UNQLITE_CURSOR_MATCH_EXACT;
 		break;
-	case SEEK_MATCH_LESS_THAN:
+	case SEEK_MATCH_LE:
 		iPos = UNQLITE_CURSOR_MATCH_LE;
 		break;
-	case SEEK_MATCH_GREATER_THAN:
+	case SEEK_MATCH_GE:
 		iPos = UNQLITE_CURSOR_MATCH_GE;
 		break;
 	default:
