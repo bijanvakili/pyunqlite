@@ -57,7 +57,7 @@ public:
 		bool append=false
 	);
 
-	DOCSTRING(kv_fetch, "Fetch a record from the database")
+	DOCSTRING(kv_fetch, "Fetch a record from the database.")
 	DOCSTRING_ARG(bool as_binary, "If set to 'true', data will be retrieved as a 'bytearray'")
     virtual pyunqlite::ValueBuffer* kv_fetch(
     	const char* key,

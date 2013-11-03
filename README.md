@@ -70,3 +70,4 @@ The project has been tested on the following platforms:
 * Ubuntu Linux v12.04 LTS 64-bit with GNU gcc
 * Mac OS X Mountain Lion 10.8 with LLVM clang
 * Microsoft Windows 7 64-bit with Visual Studio 2012
+
