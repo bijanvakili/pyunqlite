@@ -1,10 +1,9 @@
-from setuptools import setup
+from setuptools import setup, Extension
 from buildutils.clean import CleanCommand
 from buildutils.libunqlite import BuildUnqliteCommand 
 from buildutils.pyunqliteimp import BuildPyUnliteImpCommand
 from buildutils.install_lib import InstallLibCommand
-from setuptools import Extension
-
+from buildutils.examples import collect_example_filelist
 
 def main():
 
@@ -16,14 +15,19 @@ def main():
         keywords=['UnQLite'],
         author='Bijan Vakili',
         author_email='bijvak2@gmail.com',
+        license='MIT License',
         url='https://github.com/bijanvakili/pyunqlite',
+        
         cmdclass={'build_clib' : BuildUnqliteCommand,
                   'build_ext': BuildPyUnliteImpCommand,
                   'install_lib': InstallLibCommand,
                   'clean' : CleanCommand },
+        packages = ['pyunqlite' ],
         package_dir = { '' : 'src/python', },
-        packages = ['pyunqlite'],
-        license='MIT License',
+        data_files = [ ('examples', collect_example_filelist('src/python/pyunqlite/examples')),
+                       ('examples/jx9', collect_example_filelist('src/python/pyunqlite/examples/jx9'))],
+        
+        test_suite = 'pyunqlite.tests.suite',
         
         # details to be filled in by subcommands
         libraries=[('unqlite', { })],

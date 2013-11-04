@@ -1,7 +1,7 @@
 import unittest
 from pyunqlite import UnqliteDatabase
 
-class UnqliteIterators(unittest.TestCase):
+class IteratorsTestCase(unittest.TestCase):
     def setUp(self):
         self.data = {
             '01': 'One',
@@ -148,7 +148,3 @@ class UnqliteIterators(unittest.TestCase):
         self.assertEquals(self.db['04'], 'NewFour')
         self.assertEquals(self.db['05'], self.data['05'])
         self.assertEquals(self.db['06'], 'NewSix')
-            
-if __name__ == '__main__':
-    unittest.main()
-    

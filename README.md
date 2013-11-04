@@ -40,6 +40,9 @@ To build, run the following command:
 
 	python setup.py build
 
+To verify your build, run the following command:
+
+	python setup.py test
 
 ## Installation
 
@@ -55,13 +58,9 @@ If you have [sphinx](http://sphinx-doc.org/) installed, you can build the pyunql
 
 By default, the documentation will be generated under ```build/sphinx/html```.  Use the ```--build-dir``` option to specify a different path.
 
-## Samples
+## Examples
 
-After installation, you can run the test scripts as follows:
-
-    cd src/python/examples
-    python test/kv_intro.py
-    (etc ...)
+After installation, you can run the samples scripts in the ```examples``` subdirectory of the pyunqlite installation.
 
 ## Testing Notes
 
