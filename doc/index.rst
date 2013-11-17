@@ -28,7 +28,7 @@ For most basic operations, you can use your ``UnqliteDatabase`` like a python ``
 	else:
 		print "'key' was not found."
 
-Using callbacks
+Using Callbacks
 +++++++++++++++
 Data stored in the database can be very large.  This could lead to inefficient retrieval due to copy by value.
 
@@ -124,9 +124,48 @@ Callback functions have the following parameters:
 * `cb_data` (string or bytearray) : Data.
 * `cb_data_len` (int): Length of data (excluding null terminator for strings).
 
+Binary Data
++++++++++++
+You can store and retrieve non-string binary data using the python ``bytearray`` type.
+::
 
-pyunqlite (*module*)
---------------------
+   # store a binary stream
+   barr = bytearray.fromhex("a0 b1 ...")
+   db.kv_store(key='test_binary', value=barr, value_len=len(barr))
+   
+   # retrieve the binary stream as a function result
+   binary_data = db.kv_fetch(key='test_binary', as_binary=True)
+   
+   # retrieve the binary stream using a callback
+   def test_cursor_data_callback(cb_data, cb_data_len):
+      ...
+      
+   db.kv_fetch(key='test_binary', as_binary=True, callback=test_fetch_callback)
+
+   # retrieve binary data from an iterator
+   for c in db.itercursor():
+      ...
+      binary_data = c.get_value(as_binary=True)
+      
+      ...
+      c.get_value(as_binary=True, callback=test_cursor_data_callback)
+      
+      
+You can also load data directly into a pre-existinb ``bytearray`` buffer.
+::
+
+   buffer = bytearray.fromhex("00 00 00")
+   db.kv_fetch(key='test_binary', as_binary=True, value_len=3, direct_buffer=buffer)
+
+   ...
+
+   for c in db.itercursor():
+      ...
+      c.get_value(as_binary=True, value_len=3, direct_buffer=buffer)
+
+
+Module Reference
+++++++++++++++++
 
 .. automodule:: pyunqlite
 .. autoclass:: UnqliteDatabase
@@ -140,9 +179,6 @@ pyunqlite (*module*)
    :inherited-members:
    :exclude-members: acquire, append, disown, next, own   
  
-Error Handling
-++++++++++++++
-
 .. autoexception:: UnqliteException
    :members:
 
