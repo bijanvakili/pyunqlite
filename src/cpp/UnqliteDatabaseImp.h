@@ -27,13 +27,13 @@ public:
     );
 	virtual ~UnqliteDatabaseImp();
 
-	DOCSTRING(close, "Close the database")
+	DOCSTRING(close, "Explicitly closes the database.")
 	virtual void close();
 
-	DOCSTRING(is_open, "Determines if the database handle is still open")
+	DOCSTRING(is_open, "Determines if the database handle is still open.")
 	virtual bool is_open() const;
 
-	DOCSTRING(set_db_options, "Sets the database options")
+	DOCSTRING(set_db_options, "Sets addtional database options.")
 	DOCSTRING_ARG(int max_cache_pages, "Maximum raw pages to cache in memory")
 	DOCSTRING_ARG(bool auto_commit, "If set to 'false', commit() must be called to commit all database changes")
 	virtual void set_db_options(
@@ -58,7 +58,12 @@ public:
 	);
 
 	DOCSTRING(kv_fetch, "Fetch a record from the database.")
+	DOCSTRING_ARG(const char* key, "Record key")
 	DOCSTRING_ARG(bool as_binary, "If set to 'true', data will be retrieved as a 'bytearray'")
+	DOCSTRING_ARG(int key_len, "Optional maximum number of bytes to read from 'key'")
+	DOCSTRING_ARG(sxi64 value_len, "Optional data length")
+	DOCSTRING_ARG(pyunqlite::UserCallback* callback, "Optional data consumer callback")
+	DOCSTRING_ARG(pyunqlite::ValueBuffer* direct_buffer, "Optional buffer reference to directly load data")
     virtual pyunqlite::ValueBuffer* kv_fetch(
     	const char* key,
     	bool as_binary=false,

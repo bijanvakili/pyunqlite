@@ -1,6 +1,7 @@
 import _pyunqliteimp
 
-# thin wrapper for exception
+# thin wrappers
 UnqliteException = _pyunqliteimp.UnqliteException
+UnqliteCursor = _pyunqliteimp.UnqliteCursor
 
 from database import *

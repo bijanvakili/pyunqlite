@@ -10,9 +10,9 @@ SEEK_MATCH_GE = _pyunqliteimp.SEEK_MATCH_GE
 
 class UnqliteDatabase(_pyunqliteimp.UnqliteDatabaseImp):
     """
-    An UnQLite database.
-
-    :param filename: Path to database.  Using the default ':mem:' will create the database in memory
+    An UnQLite database
+    
+    :param filename: Path to database.  Using the default ``':mem:'`` will create the database in memory
     :type filename: str
     :param create: ``True`` to open with read/write priveleges ...
     :type create: bool
@@ -24,6 +24,12 @@ class UnqliteDatabase(_pyunqliteimp.UnqliteDatabaseImp):
     :type use_journaling: bool
     :param use_mutex: Default ``True`` to include private mutex on database handle.  Set to ``False`` to omit mutex (not recommended).
     :type use_mutex: bool
+
+    If you opened thedatabase by calling ``UnqliteDatabase()`` directly, then you must call ``close()``
+    Otherwise, it is recommended to use a context managed inside a ``with`` statement to close the database automatically::
+    
+        with UnqliteDatabase(...) as db: 
+            ....
 
     """
     
@@ -83,7 +89,7 @@ class UnqliteDatabase(_pyunqliteimp.UnqliteDatabaseImp):
         """
         return self.kv_exists(key)
 
-    def _get_cursor_context(self):
+    def get_cursor_context(self):
         return contextlib.closing(self.kv_cursor())
 
     
@@ -97,56 +103,28 @@ class UnqliteDatabase(_pyunqliteimp.UnqliteDatabaseImp):
             cursor.seek_begin()
         
     
-    def _iterate(self, 
-                 include_keys=True, 
-                 include_values=True, 
-                 values_as_binary=False,
-                 backwards=False,
-                 start=None, 
-                 match_type=SEEK_MATCH_EXACT):
-
-        with self._get_cursor_context() as cursor:
+    def itercursor(self, start=None, match_type=SEEK_MATCH_EXACT, backwards=False):
+        """
+        Iterates through the database using a cursor.
         
+        :param start: Starting key.  Defaults to ``None``
+        :type key: str
+        :param match_type: Matching type for starting key (see Iterating_ for details).
+        :param backwards: ``True`` to iterate backwards, ``False`` otherwise (default)
+        :type backwards: bool
+        """
+        
+        with self.get_cursor_context() as cursor:
+            
             # determine the appropriate starting point
             self._init_cursor(cursor, backwards, start, match_type)
-                
-            while cursor.is_valid():
             
-                # return data depending on the desired inclusions
-                if include_keys and include_values:
-                    yield (cursor.get_key(), cursor.get_data(as_binary=values_as_binary),) 
-                elif include_keys:
-                    yield cursor.get_key()
-                elif include_values:
-                    yield cursor.get_data(as_binary=values_as_binary)
+            while cursor.is_valid():
+                yield cursor
                 
                 # move the cursor
                 cursor.next() if not backwards else cursor.prev()
-
-            
-    def iterate_with_callbacks(self, 
-                               keys_callback=None,
-                               values_callback=None,
-                               values_as_binary=False,
-                               backwards=False,
-                               start=None, 
-                               match_type=SEEK_MATCH_EXACT):
-
-        with self._get_cursor_context() as cursor:
-        
-            # determine the appropriate starting point
-            self._init_cursor(cursor, backwards, start, match_type)
-                
-            while cursor.is_valid():
-            
-                if keys_callback:
-                    cursor.get_key(callback=keys_callback)
-                if values_callback:
-                    cursor.get_data(callback=values_callback, as_binary=values_as_binary)
-                
-                # move the cursor
-                cursor.next() if not backwards else cursor.prev()
-
+    
     def __iter__(self):
         """
         Iterates through all the keys in the database in forward sequential order.
@@ -172,7 +150,8 @@ class UnqliteDatabase(_pyunqliteimp.UnqliteDatabaseImp):
         See Iterating_ for details.
 
         """
-        return self._iterate(include_keys=True, include_values=False, **kvargs)
+        for cursor in self.itercursor(**kvargs):
+            yield cursor.get_key()
         
     def itervalues(self, **kvargs):
         """
@@ -181,7 +160,9 @@ class UnqliteDatabase(_pyunqliteimp.UnqliteDatabaseImp):
         See Iterating_ for details.
 
         """
-        return self._iterate(include_keys=False, include_values=True, **kvargs)
+        as_binary = kvargs.get('as_binary', False)
+        for cursor in self.itercursor(**kvargs):
+            yield cursor.get_data(as_binary=as_binary)
     
     def iteritems(self, **kvargs):
         """
@@ -190,15 +171,16 @@ class UnqliteDatabase(_pyunqliteimp.UnqliteDatabaseImp):
         See Iterating_ for details.
 
         """
-        return self._iterate(include_keys=True, include_values=True, **kvargs)
+        as_binary = kvargs.get('as_binary', False)
+        for cursor in self.itercursor(**kvargs):
+            yield (cursor.get_key(), cursor.get_data(as_binary=as_binary), )
         
-    # TODO implement similar methods from python dict()
     def clear(self):
         """
         Removes all records from the database.
 
         """
-        with self._get_cursor_context() as cursor:
+        with self.get_cursor_context() as cursor:
             while cursor.is_valid():
                 cursor.remove()
             
@@ -264,21 +246,31 @@ class UnqliteDatabase(_pyunqliteimp.UnqliteDatabaseImp):
 
         """
         results = []
-        def callback(*args): 
+        def collect_keys(*args): 
             results.append(args[0])
-            return True 
-        self.iterate_with_callbacks(keys_callback=callback)
+            return True
+        
+        for cursor in self.itercursor():
+            cursor.get_key(callback=collect_keys) 
+
         return results
     
-    def values(self):
+    def values(self, as_binary=False):
         """
         Return a copy of the dictionary's list of values. 
+        
+        :param as_binary: ``True`` to retrieve values as ``bytearray``, ``False`` as ``str`` (default) 
+        :type key: bool
+        
         """
         results = []
-        def callback(*args): 
+        def collect_values(*args): 
             results.append(args[0])
             return True 
-        self.iterate_with_callbacks(values_callback=callback)
+        
+        for cursor in self.itercursor():
+            cursor.get_data(callback=collect_values, as_binary=as_binary) 
+
         return results
 
     
@@ -303,7 +295,7 @@ class UnqliteDatabase(_pyunqliteimp.UnqliteDatabaseImp):
         Remove and return an arbitrary (key, value) pair from the dictionary.
 
         """
-        with self._get_cursor_context() as cursor:
+        with self.get_cursor_context() as cursor:
             if cursor.is_valid():
                 cursor.remove()
             else:

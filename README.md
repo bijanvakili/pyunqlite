@@ -15,8 +15,8 @@ TODO This project does not yet support python 3.x
 
 ### Build Requirements
 
-1. [python](http://www.python.org/) and development headers
-2. [unqlite](http://unqlite.org/) and development headers
+1. [unqlite](http://unqlite.org/) and development headers (see [Building from source](#building-from-source) described below)
+2. [python](http://www.python.org/) and development headers
 3. [SWIG](http://www.swig.org/)
 4. [setuptools](http://pythonhosted.org/setuptools/)
 

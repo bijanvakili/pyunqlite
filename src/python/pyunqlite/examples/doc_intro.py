@@ -17,7 +17,8 @@ def main(argv):
     with UnqliteDatabase(**kargs) as db:
         
         # create the JX9 virtual machine 
-        with db.vm_compile(filename=os.path.join('jx9', 'db_intro.jx9.txt')) as vm:
+        examples_dir = os.path.dirname(os.path.abspath(__file__))
+        with db.vm_compile(filename=os.path.join(examples_dir, 'jx9', 'db_intro.jx9.txt')) as vm:
             
             # run the virtual machine
             vm.execute(callback=data_consumer)

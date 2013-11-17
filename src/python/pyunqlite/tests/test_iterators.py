@@ -67,7 +67,8 @@ class IteratorsTestCase(unittest.TestCase):
             self.assertIn(cb_data, data_keys)
             self.assertEqual(cb_data_len, len(cb_data))
             
-        self.db.iterate_with_callbacks(keys_callback=keys_callback)
+        for c in self.db.itercursor():
+            c.get_key(callback=keys_callback)
 
     def test_value_methods(self):
         
@@ -84,7 +85,8 @@ class IteratorsTestCase(unittest.TestCase):
             self.assertIn(cb_data, data_values)
             self.assertEqual(cb_data_len, len(cb_data))
             
-        self.db.iterate_with_callbacks(values_callback=values_callback)
+        for c in self.db.itercursor():
+            c.get_data(callback=values_callback)
 
         for k,v in self.db.iteritems():
             self.assertIn(k, self.data)
@@ -103,7 +105,10 @@ class IteratorsTestCase(unittest.TestCase):
         results = []
         def values_callback(*args):
             results.append(args[0])
-        self.db.iterate_with_callbacks(backwards=True, values_callback=values_callback)
+            
+        for c in self.db.itercursor(backwards=True):
+            c.get_data(callback=values_callback)
+
         reversed_values = self.data.values()[:]
         reversed_values.reverse()
         self.assertEqual(results, reversed_values)
@@ -148,3 +153,16 @@ class IteratorsTestCase(unittest.TestCase):
         self.assertEquals(self.db['04'], 'NewFour')
         self.assertEquals(self.db['05'], self.data['05'])
         self.assertEquals(self.db['06'], 'NewSix')
+        
+    def test_iterate_start_key(self):
+        
+        # cannot truly test ordering on iteration since in-memory database (mem_hash_kv_engine) is a hash table
+        # TODO see if we can force sorted order using UNQLITE_LIB_CONFIG_STORAGE_ENGINE in future
+        #      versions of unqlite
+        
+        first = True
+        for k,v in self.db.iteritems(start='03'):
+            if (first):
+                self.assertEquals(k, '03')
+                first = False
+            self.assertEquals(v, self.data[k])

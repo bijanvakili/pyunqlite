@@ -100,8 +100,7 @@ UnqliteCursor::get_key(int key_len, pyunqlite::UserCallback* callback)
 	}
 	else
 	{
-		int nBytes = 0;
-		unqlite_kv_cursor_key(this->_cursor, 0, &nBytes);
+		int nBytes = get_key_len();
 
 		// create the buffer
 		value = new ValueBuffer(false, nBytes);
@@ -117,6 +116,17 @@ UnqliteCursor::get_key(int key_len, pyunqlite::UserCallback* callback)
 		throw UnqliteException(rc, this->_db);
 
 	return value;
+}
+
+int
+UnqliteCursor::get_key_len()
+{
+	int nBytes = 0;
+	int rc = unqlite_kv_cursor_key(this->_cursor, 0, &nBytes);
+	if (rc != UNQLITE_OK)
+		throw UnqliteException(rc, this->_db);
+
+	return nBytes;
 }
 
 ValueBuffer*
@@ -173,7 +183,9 @@ sxi64
 UnqliteCursor::get_data_len()
 {
 	sxi64 nBytes = 0;
-	unqlite_kv_cursor_data(this->_cursor, 0, &nBytes);
+	int rc = unqlite_kv_cursor_data(this->_cursor, 0, &nBytes);
+	if (rc != UNQLITE_OK)
+		throw UnqliteException(rc, this->_db);
 
 	return nBytes;
 }
