@@ -1,6 +1,8 @@
 #ifndef _UNQLITE_VIRTUALMACHINE_H
 #define _UNQLITE_VIRTUALMACHINE_H
 
+#include <string>
+#include <map>
 #include "UnqliteCommon.h"
 #include "UnqliteException.h"
 #include "Callback.h"
@@ -23,6 +25,12 @@ public:
 	);
 	virtual void reset();
 
+	virtual void create_constant(
+		const char* name,
+		Py::Callable& callback,
+		Py::Object* user_data = 0
+	);
+	virtual void delete_constant(const char* name);
 
 	// TODO add other options from 'unqlite_vm_config'
 	virtual void set_vm_options(
@@ -37,9 +45,26 @@ public:
 
 protected:
 
-	// TODO mark _db as a 'weak' reference
+	// constants registry entry
+	struct ConstantRecord
+	{
+		Py::Callable callback;
+		Py::Object user_data;
+	};
+	typedef std::map<std::string, ConstantRecord*> ConstantMap;
+
+
+	// TODO mark _db as a 'weak' references
 	unqlite* _db;
 	unqlite_vm* _vm;
+
+	ConstantMap _constant_registry;
+
+	// converters
+	static int convert(const Py::Object& from, unqlite_value* to);
+
+	// static callbacks
+	static void on_constant(unqlite_value *pValue, void *pUserData);
 };
 
 } // namespace pyunqlite

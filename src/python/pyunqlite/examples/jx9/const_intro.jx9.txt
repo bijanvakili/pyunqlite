@@ -1,0 +1,3 @@
+print '__PI__   value: ' .. __PI__ ..   JX9_EOL;
+print '__TIME__ value: ' .. __TIME__ .. JX9_EOL;
+print '__OS__   value: ' .. __OS__ ..   JX9_EOL;

@@ -23,6 +23,8 @@ TODO This project does not yet support python 3.x
 Optional requirements include:
 * [sphinx](http://sphinx-doc.org/) for generating HTML documentation
 
+This project include a minimal copy of [PyCXX](http://cxx.sourceforge.net/) C++ source v6.2.3 under ```src/cpp/lib/pycxx```
+
 ### Building from source
 
 pyunqlite can link to the unqlite library (libunqlite) in 3 ways:

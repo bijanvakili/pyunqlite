@@ -42,5 +42,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-# TODO add 'test_suite'
 # TODO support python 3 using --> use_2to3 = True,

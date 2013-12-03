@@ -16,14 +16,14 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>3rdparty</name>
-			<type>2</type>
-			<location>/home/bijanv/funspace/3rdparty</location>
-		</link>
-		<link>
 			<name>build</name>
 			<type>2</type>
 			<location>/home/bijanv/funspace/pyunqlite/.build</location>
+		</link>
+		<link>
+			<name>pyenv_pyunqlite</name>
+			<type>2</type>
+			<location>/home/bijanv/funspace/pyenv_pyunqlite</location>
 		</link>
 		<link>
 			<name>unqlite_src</name>

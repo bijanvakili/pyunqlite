@@ -20,23 +20,24 @@ class BuildPyUnliteImpCommand(BuildExtBase, DirectoriesMixin):
         cpp_src_dir = self._CPP_SOURCE_DIR
         source_files=glob.glob(os.path.join(cpp_src_dir, '*.cpp'))
         source_files.extend(glob.glob(os.path.join(cpp_src_dir, 'pyunqliteimp.i')))
+        source_files.extend(glob.glob(os.path.join(cpp_src_dir, 'lib', 'pycxx', 'Src', '*.c*')))
         header_files=glob.glob(os.path.join(cpp_src_dir, '*.h'))
         header_files.extend(glob.glob(os.path.join(cpp_src_dir, 'usercallback.i')))
         header_files.extend(glob.glob(os.path.join(cpp_src_dir, 'valuebuffer.i')))
 
-        include_dirs=[]
+        include_dirs=[os.path.join(cpp_src_dir, 'lib', 'pycxx')]
         
         # Use the headers from the unqlite build directory if they were extracted
         unqlite_src_dir = self._get_unqlite_build_dir()
         if os.path.exists(unqlite_src_dir):
-            include_dirs.append(unqlite_src_dir) 
-
+            include_dirs.append(unqlite_src_dir)
+            
         # update source information
         for module in self.extensions:
             if module.name == '_pyunqliteimp':
                 module.sources=source_files
                 module.depends=header_files
-                module.include_dirs=[]
+                module.include_dirs=include_dirs
 
     def run(self):
         # Use the headers from the unqlite build directory if they were extracted
@@ -44,7 +45,6 @@ class BuildPyUnliteImpCommand(BuildExtBase, DirectoriesMixin):
         if os.path.exists(unqlite_src_dir):
             if not self.include_dirs:
                 self.include_dirs=[]
-            self.include_dirs.append(unqlite_src_dir)
-
+            
         BuildExtBase.run(self)
 

@@ -16,6 +16,7 @@
 extern "C" {
 	#include "unqlite.h"
 };
+#include "CXX/Objects.hxx"
 #include "UnqliteException.h"
 #include "PythonException.h"
 #include "UnqliteCursor.h"
@@ -53,9 +54,13 @@ pyunqliteimp_Shutdown()
 %exception {
   try {
     $action
-  } 
+  }
   catch (pyunqlite::PythonException& e) {
   	e.restore();
+  	return 0;
+  }
+  catch (Py::Exception& e) {
+	// PyCXX implicitly calls PyErr_SetString()   
   	return 0;
   }
   catch (const pyunqlite::UnqliteException& e) {
@@ -97,6 +102,7 @@ pyunqliteimp_Shutdown()
 
 %include "valuebuffer.i"
 %include "usercallback.i"
+%include "pycxx.i"
 
 /* Headers to parse to generate wrappers */
 %include "UnqliteCursor.h"

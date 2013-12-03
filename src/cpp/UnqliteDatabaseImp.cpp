@@ -2,7 +2,7 @@
 extern "C" {
 #include "unqlite.h"
 };
-
+#include "CXX/Objects.hxx"
 #include "UnqliteDatabaseImp.h"
 #include "UnqliteCursor.h"
 

@@ -54,7 +54,7 @@ Therefore, it is recommend you use callbacks to ensure copy-by-reference semanti
 
 Iterating
 +++++++++
-You can also iterate over the database like a python dict:
+You can also iterate over the database like a python ``dict``:
 ::
 
 	# iterate with key and values
@@ -108,7 +108,7 @@ You can also perform randomized cursor control by directly using the cursor rath
          else:
             cursor.prev()
 		
-Iterator (``iter`` prefixed functions) have the following parameters:
+Iterator (function prefixed with ``iter``) have the following parameters:
 
 * `start` (callback): Optional starting key for iteration 
 * `match_type`: Optional key matching method if 'start' is specified. 
