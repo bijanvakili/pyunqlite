@@ -25,3 +25,14 @@
 	delete $1;
 }
 %typemap("doc") Py::Object* user_data "$1_name: User-defined data"
+
+%typemap(out) Py::Object* {
+	if ($1) {
+		$result = $1->ptr();
+		$1->increment_reference_count();
+		delete $1;
+	}
+	else {
+		$result = SWIG_Py_Void();
+	}
+}

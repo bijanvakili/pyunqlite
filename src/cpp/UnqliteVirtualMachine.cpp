@@ -1,3 +1,4 @@
+#include <Python.h>
 extern "C" {
 #include "unqlite.h"
 };
@@ -15,11 +16,11 @@ UnqliteVirtualMachine::UnqliteVirtualMachine(unqlite* db, unqlite_vm* vm)
 
 UnqliteVirtualMachine::~UnqliteVirtualMachine()
 {
-	release();
+	close();
 }
 
 void
-UnqliteVirtualMachine::release()
+UnqliteVirtualMachine::close()
 {
 	for (ConstantMap::iterator it = _constant_registry.begin(); it != _constant_registry.end(); ++it)
 		delete it->second;
@@ -29,13 +30,8 @@ UnqliteVirtualMachine::release()
 	{
 		unqlite_vm_release( this->_vm );
 		this->_vm = 0;
+		this->_db = 0;
 	}
-}
-
-void
-UnqliteVirtualMachine::close()
-{
-	release();
 }
 
 void
@@ -150,6 +146,52 @@ UnqliteVirtualMachine::convert(const Py::Object& src, unqlite_value* dest)
 	return rc;
 }
 
+
+Py::Object*
+UnqliteVirtualMachine::convert(unqlite_value* from, int max_len)
+{
+	Py::Object* to = 0;
+
+	if (unqlite_value_is_int(from)) {
+		to = new Py::Int(unqlite_value_to_int(from));
+	}
+	else if (unqlite_value_is_float(from)) {
+		to = new Py::Float(unqlite_value_to_double(from));
+	}
+	else if (unqlite_value_is_bool(from)) {
+		to = new Py::Boolean(unqlite_value_to_bool(from));
+	}
+	else if (unqlite_value_is_string(from)) {
+		int* pLen = 0;
+		if (max_len > 0)
+			pLen = &max_len;
+		to = new Py::String(unqlite_value_to_string(from, pLen));
+	}
+	else if (unqlite_value_is_resource(from)) {
+
+		if (max_len < 0)
+			return 0;
+
+		// TODO Change to use Py::Bytes when upgrading to Python 3
+		to = new Py::Object(PyByteArray_FromStringAndSize((const char*)unqlite_value_to_resource(from), max_len));
+	}
+	else if (unqlite_value_is_null(from)) {
+		to = new Py::Object();
+	}
+
+	/* TODO create additional value conversions
+		unqlite_value_is_numeric
+		unqlite_value_is_callable
+		unqlite_value_is_json_array
+		unqlite_value_is_scalar
+		unqlite_value_is_json_object
+		unqlite_value_is_empty
+	 */
+
+
+	return to;
+}
+
 void
 UnqliteVirtualMachine::execute(
 	pyunqlite::UserCallback* callback,
@@ -225,5 +267,21 @@ UnqliteVirtualMachine::set_vm_options(
 	}
 }
 
+
+Py::Object*
+UnqliteVirtualMachine::get_variable(const char* name, int max_len)
+{
+	// extract the value
+	unqlite_value* pValue = unqlite_vm_extract_variable(this->_vm, name);
+	if (!pValue)
+		throw UnqliteException(UNQLITE_NOTFOUND, this->_db);
+
+	// convert the UnQLite value to a python object
+	Py::Object* result = convert(pValue, max_len);
+	if (!result)
+		throw UnqliteException(UNQLITE_INVALID, this->_db);
+
+	return result;
+}
 
 } // namespace pyunqlite

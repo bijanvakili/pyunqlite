@@ -39,6 +39,9 @@ class UnqliteDatabase(_pyunqliteimp.UnqliteDatabaseImp):
     
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
+    
+    def __nonzero__(self):
+        return self.is_open()
         
     # container methods
     def __len__(self):
@@ -339,7 +342,7 @@ class UnqliteDatabase(_pyunqliteimp.UnqliteDatabaseImp):
     def viewvalues(self):
         raise NotImplementedError('Dictionary view not implemented yet')
            
-    def vm_compile(self, filename=None, jx9_content=None, jx9_content_len=-1):
+    def vm_compile(self, filename=None, jx9_content=None, jx9_content_len=-1, no_context=False):
         """
         Compiles and returns a VM.
 
@@ -352,6 +355,6 @@ class UnqliteDatabase(_pyunqliteimp.UnqliteDatabaseImp):
         :returns: An UnQLite JX9 virtual machine
         :raises: UnqliteException - An error occurred creating this virtual machine
         """
-        return contextlib.closing(
-            super(UnqliteDatabase, self).vm_compile(
-                filename, jx9_content, jx9_content_len))
+        # TODO Remove the 'no_context' flag with some refactoring
+        vm = super(UnqliteDatabase, self).vm_compile(filename, jx9_content, jx9_content_len)
+        return vm if no_context else contextlib.closing(vm)

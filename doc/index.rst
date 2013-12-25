@@ -164,6 +164,28 @@ You can also load data directly into a pre-existinb ``bytearray`` buffer.
       c.get_value(as_binary=True, value_len=3, direct_buffer=buffer)
 
 
+Virtual Machines
+++++++++++++++++
+You can create virtual machines to operate on the UnQLite database
+::
+
+   # a user defined constant
+   def PI_constant(user_data):
+      return 3.1415926535898
+
+   # open a virtual machine within a context
+   with db.vm_compile(filename=os.path.join(examples_dir, 'jx9', 'db_intro.jx9.txt')) as vm:
+
+      # set up constants
+      vm.create_constant('__PI__', callback=PI_constant)
+
+      # run the virtual machine
+      vm.execute(callback=data_consumer)
+
+      # output the result
+      print 'Result = {0}'.format(self.vm.get_variable('result'))
+
+
 Module Reference
 ++++++++++++++++
 
@@ -171,13 +193,18 @@ Module Reference
 .. autoclass:: UnqliteDatabase
    :members:
    :inherited-members:
-   :exclude-members: acquire, append, disown, next, own   
+   :exclude-members: acquire, append, disown, next, own, __cmp__, __delattr__, __format__, __ge__, __getattribute__, __gt__, __hash__, __hex__, __init__, __le__, __long__, __lt__, __ne__, __new__, __oct__, __reduce__, __reduce_ex__, __repr__, __setattr__, __sizeof__, __str__, __subclasshook__, __wearef__ 
    :special-members: __getitem__, __setitem__, __delitem__, __contains__, __iter__, __reversed__ 
 
 .. autoclass:: UnqliteCursor
    :members:
    :inherited-members:
-   :exclude-members: acquire, append, disown, next, own   
+   :exclude-members: acquire, append, disown, next, own
+ 
+.. autoclass:: UnqliteVirtualMachine
+   :members:
+   :inherited-members:
+   :exclude-members: acquire, append, disown, next, own
  
 .. autoexception:: UnqliteException
    :members:
